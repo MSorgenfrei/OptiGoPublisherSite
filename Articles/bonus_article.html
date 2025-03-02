@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Changing Landscape of Digital Journalism in 2025 | Your Name</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Georgia', serif;
+        }
+        
+        body {
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 30px;
+        }
+        
+        .site-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+        }
+        
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        .main-nav li {
+            margin-right: 25px;
+        }
+        
+        .main-nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .main-nav a:hover {
+            color: #1a73e8;
+        }
+        
+        .article-header {
+            margin-bottom: 40px;
+        }
+        
+        .article-header img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+        
+        .article-meta {
+            margin-bottom: 20px;
+        }
+        
+        .article-category {
+            background: #e63946;
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .article-title {
+            font-size: 2.8rem;
+            line-height: 1.2;
+            margin-bottom: 15px;
+        }
+        
+        .article-subtitle {
+            font-size: 1.5rem;
+            font-weight: normal;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        
+        .article-info {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .article-info span {
+            margin-right: 15px;
+        }
+        
+        .article-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .article-content p {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+        
+        .article-content h2 {
+            font-size: 1.8rem;
+            margin: 40px 0 20px;
+        }
+        
+        .article-content h3 {
+            font-size: 1.5rem;
+            margin: 30px 0 15px;
+        }
+        
+        .article-content img {
+            width: 100%;
+            margin: 30px 0;
+        }
+        
+        .article-content figcaption {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            margin-top: -20px;
+            margin-bottom: 30px;
+        }
+        
+        .article-content a {
+            color: #1a73e8;
+            text-decoration: underline;
+        }
+        
+        .article-content ul, .article-content ol {
+            margin-bottom: 25px;
+            padding-left: 40px;
+        }
+        
+        .article-content li {
+            margin-bottom: 10px;
+        }
+        
+        .pull-quote {
+            border-left: 4px solid #1a73e8;
+            padding: 15px 30px;
+            margin: 30px 0;
+            font-size: 1.4rem;
+            font-style: italic;
+            color: #555;
+        }
+        
+        .pull-quote-attribution {
+            display: block;
+            font-size: 1rem;
+            font-style: normal;
+            text-align: right;
+            margin-top: 10px;
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .related-articles {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid #eee;
+        }
+        
+        .related-articles h2 {
+            margin-bottom: 30px;
+        }
+        
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        
+        .related-card {
+            margin-bottom: 25px;
+        }
+        
+        .related-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        
+        .related-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .related-card p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .author-section {
+            background: #f9f9f9;
+            padding: 30px;
+            margin: 50px 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .author-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .author-bio h3 {
+            margin-bottom: 10px;
+        }
+        
+        .author-bio p {
+            margin-bottom: 10px;
+        }
+        
+        .author-links a {
+            margin-right: 15px;
+            color: #1a73e8;
+        }
+        
+        footer {
+            margin-top: 50px;
+            padding: 30px 0;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #666;
+        }
+        
+        .social-share {
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .social-share a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #1a73e8;
+        }
+        
+        @media (max-width: 768px) {
+            .related-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .article-title {
+                font-size: 2.2rem;
+            }
+            
+            .article-subtitle {
+                font-size: 1.3rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .related-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .author-section {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .article-title {
+                font-size: 1.8rem;
+            }
+            
+            .article-subtitle {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="site-name">Your Name</div>
+        <p>Journalist | Writer | Storyteller</p>
+        <nav>
+            <div class="main-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#politics">Politics</a></li>
+                    <li><a href="index.html#technology">Technology</a></li>
+                    <li><a href="index.html#culture">Culture</a></li>
+                    <li><a href="index.html#opinion">Opinion</a></li>
+                    <li><a href="about.html">About</a></li>
+                </ul>
+            </div>
+            <div class="search">
+                <input type="text" placeholder="Search...">
+            </div>
+        </nav>
+    </header>
+    
+    <main>
+        <article class="article-content">
+            <div class="article-header">
+                <img src="/api/placeholder/1200/600" alt="Digital journalism concept image">
+                <div class="article-meta">
+                    <span class="article-category">Feature</span>
+                    <h1 class="article-title">The Changing Landscape of Digital Journalism in 2025</h1>
+                    <h2 class="article-subtitle">How independent journalists are reshaping media consumption and challenging traditional news outlets</h2>
+                    <div class="article-info">
+                        <span>By Your Name</span>
+                        <span>February 26, 2025</span>
+                        <span>15 min read</span>
+                    </div>
+                </div>
+            </div>
+            
+            <p>The year 2025 marks a significant inflection point in the evolution of digital journalism. As traditional media continues to grapple with shrinking revenues and audiences, a new class of independent journalists has emerged, armed with direct-to-reader business models and innovative publishing platforms that bypass traditional gatekeepers.</p>
+            
+            <p>This shift isn't merely a temporary disruption but represents a fundamental restructuring of how news is produced, distributed, and consumed in the digital age. The implications extend beyond business models to questions about journalistic standards, audience trust, and the very definition of what constitutes "news" in our algorithmically-driven information ecosystem.</p>
+            
+            <div class="pull-quote">
+                "We're witnessing the unbundling of journalism from its institutional constraints. The individual journalist now has more power than at any point in modern media history."
+                <span class="pull-quote-attribution">— Dr. Sarah Chen, Media Studies Professor</span>
+            </div>
+            
+            <h2>The Rise of the Independent Journalist</h2>
+            
+            <p>Just five years ago, leaving an established media organization to start an independent publication would have seemed risky at best, career suicide at worst. Today, it's increasingly becoming the preferred path for journalists with established audiences.</p>
+            
+            <p>Consider the trajectory of former Washington Post technology columnist Maya Rodriguez, who left the paper in 2023 to launch her own publication, "The Circuit." Within six months, she had surpassed her previous salary through a combination of subscriptions, newsletter sponsorships, and a community-driven membership program.</p>
+            
+            <p>"I didn't just want more money – I wanted more freedom to pursue stories that wouldn't fit neatly into traditional news categories," Rodriguez explains. "The old boundaries between tech reporting, business journalism, and cultural criticism felt increasingly artificial."</p>
+            
+            <figure>
+                <img src="/api/placeholder/800/500" alt="A journalist working on their independent publication">
+                <figcaption>The home office setup of an independent journalist who left a major newspaper in 2024. Photo by Your Name.</figcaption>
+            </figure>
+            
+            <p>Rodriguez isn't alone. A survey conducted in January 2025 by the Digital Press Association found that over 35% of journalists with more than ten years of experience at major publications were actively planning to launch independent ventures within the next 18 months.</p>
+            
+            <h2>Technology as Enabler</h2>
+            
+            <p>This migration away from institutional journalism has been enabled by technological developments that have dramatically lowered the barriers to entry for independent publishers. No-code website builders, integrated payment systems, and AI-assisted editing tools have created an ecosystem where a single journalist can manage what once required an entire team.</p>
+            
+            <p>"The infrastructure costs of running a news operation have collapsed," explains media analyst Marcus Kim. "Ten years ago, content management systems alone could cost tens of thousands of dollars to implement. Today, you can set up a professional-looking news site with integrated subscriptions in an afternoon."</p>
+            
+            <div class="video-container">
+                <!-- This would be a YouTube embed in a real implementation -->
+                <img src="/api/placeholder/800/450" alt="Video placeholder">
+            </div>
+            
+            <h2>The Algorithm Challenge</h2>
+            
+            <p>Yet significant challenges remain. The decline of social media as a reliable distribution channel has forced independent journalists to develop direct relationships with readers through email newsletters and private communities. Meanwhile, the algorithmic curation of news has created new questions about visibility and reach.</p>
+            
+            <p>"We're seeing a bifurcation in the market," notes Dr. Chen. "On one hand, there's high-quality, subscription-supported journalism for those willing to pay. On the other, there's algorithm-optimized content designed to capture attention rather than inform."</p>
+            
+            <p>This tension between quality and visibility has led to experimentation with new formats and distribution strategies. Some independent journalists have formed collectives to share resources and cross-promote content, while others have embraced multimedia approaches that combine written analysis with podcasts and video.</p>
+            
+            <h2>The Future of Journalism</h2>
+            
+            <p>As we move deeper into 2025, several trends are becoming clear:</p>
+            
+            <ul>
+                <li><strong>Specialization will intensify:</strong> Broad, general-interest publications will continue to struggle, while deeply specialized coverage of specific topics or geographic areas will thrive.</li>
+                <li><strong>Community will become central:</strong> Successful independent journalists will build communities around their work, not just audiences.</li>
+                <li><strong>New economic models will emerge:</strong> Beyond subscriptions, we'll see experimentation with patronage, bundling, and blockchain-based compensation systems.</li>
+                <li><strong>Institutional journalism will adapt:</strong> Traditional news organizations are already implementing lessons from the independent media movement, creating more opportunities for journalistic entrepreneurship within established structures.</li>
+            </ul>
+            
+            <p>The landscape of digital journalism in 2025 is characterized by both fragmentation and innovation. While concerns about the sustainability of local news coverage and investigative reporting remain, there's also unprecedented opportunity for journalists to connect directly with the communities they serve.</p>
+            
+            <p>As Rodriguez puts it, "We're rewriting the rules of journalism in real-time. It's terrifying and exhilarating in equal measure."</p>
+            
+            <div class="social-share">
+                <p>Share this article:</p>
+                <a href="#" aria-label="Share on Twitter">Twitter</a>
+                <a href="#" aria-label="Share on Facebook">Facebook</a>
+                <a href="#" aria-label="Share on LinkedIn">LinkedIn</a>
+                <a href="#" aria-label="Share via Email">Email</a>
+            </div>
+            
+            <div class="author-section">
+                <img src="/api/placeholder/100/100" alt="Author photo" class="author-image">
+                <div class="author-bio">
+                    <h3>About the Author</h3>
+                    <p>Your Name is a journalist specializing in media trends, technology, and digital culture. Previously a staff writer at The Atlantic and editor at WIRED, they now publish independent analysis focused on the intersection of technology and society.</p>
+                    <div class="author-links">
+                        <a href="#" aria-label="Author's Twitter">Twitter</a>
+                        <a href="#" aria-label="Author's website">
