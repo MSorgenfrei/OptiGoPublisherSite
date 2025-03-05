@@ -324,6 +324,20 @@
             text-align: right;
             margin-top: 10px;
         }
+
+        @media screen and (max-width: 390px) {
+            #modal h1 {
+                font-size: 2px !important; /* Smaller font size for mobile */
+            }
+            
+            #modal p {
+                font-size: 1px !important; /* Smaller font size for mobile */
+            }
+            
+            #modal button {
+                font-size: 2px; /* Smaller button text for mobile */
+            }
+        }
         
         @media (max-width: 768px) {
             .hero-section {
@@ -340,19 +354,7 @@
                 grid-template-columns: 1fr;
             }
         }
-        @media screen and (max-width: 30px) {
-            #modal h2 {
-                font-size: 2px !important; /* Smaller font size for mobile */
-            }
-            
-            #modal p {
-                font-size: 1px !important; /* Smaller font size for mobile */
-            }
-            
-            #modal button {
-                font-size: 2px; /* Smaller button text for mobile */
-            }
-        }
+       
 
     </style>
 
