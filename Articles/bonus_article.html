@@ -325,19 +325,7 @@
             margin-top: 10px;
         }
 
-        @media screen and (max-width: 390px) {
-            #modal h1 {
-                font-size: 8px !important; /* Smaller font size for mobile */
-            }
-            
-            #modal p {
-                font-size: 6px !important; /* Smaller font size for mobile */
-            }
-            
-            #modal button {
-                font-size: 10px !important; /* Smaller button text for mobile */
-            }
-        }
+
         
         @media (max-width: 768px) {
             .hero-section {
@@ -355,7 +343,6 @@
             }
         }
        
-
     </style>
 
 </head>
@@ -508,9 +495,9 @@
                 modal.style.left = "50%";
                 modal.style.transform = "translate(-50%, -50%)";
                 modal.style.padding = "100px";
-                modal.style.width = "90%vw"; // Set width relative to the viewport
+                modal.style.width = "90vw"; // Set width relative to the viewport vw makes it dependent on the viewport width
                 modal.style.maxWidth = "500px"; // Set a max-width for larger screens
-                modal.style.height = "autovh"; // Adjust height to content
+                modal.style.height = "auto"; // Adjust height to content
                 modal.style.background = "#fff";
                 modal.style.borderRadius = "8px";
                 modal.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.1)";
@@ -518,20 +505,13 @@
                 modal.style.textAlign = "center";
                 modal.style.display = "none"; // Initially hidden
                 modal.innerHTML = `
-                    <h1>Pay As You Go.</h1>
-                    <p>No subscriptions. No surprises.</p>
-                    <button id="continueBtn" 
-                        style="padding: 10px 20px; 
-                        background: #007BFF; 
-                        color: white; 
-                        border: none; 
-                        cursor: pointer; 
-                        border-radius: 5px; 
-                        margin-top: 30px;
-                        ">REVEAL ARTICLE FOR $0.49
+                    <h1 style="font-size: 2vw;">Pay As You Go.</h1>
+                    <p style="font-size: 1vw;">No subscriptions. No surprises.</p>
+                    <button id="continueBtn" style="padding: 10px 20px; background: #007BFF; color: white; border: none; cursor: pointer; border-radius: 5px; margin-top: 30px;">
+                        REVEAL ARTICLE FOR $0.49
                     </button>
-                    <small style="display: block; margin-top: 10px;">Powered by OptiGo.</small>
-                `;
+                    <small style="display: block; margin-top: 10px; font-size: 1vw;">Powered by OptiGo.</small>
+`;
 
                 // Append elements to the page
                 document.body.appendChild(paywall);
