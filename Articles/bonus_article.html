@@ -340,6 +340,20 @@
                 grid-template-columns: 1fr;
             }
         }
+        @media screen and (max-width: 30px) {
+            #modal h2 {
+                font-size: 2px !important; /* Smaller font size for mobile */
+            }
+            
+            #modal p {
+                font-size: 1px !important; /* Smaller font size for mobile */
+            }
+            
+            #modal button {
+                font-size: 2px; /* Smaller button text for mobile */
+            }
+        }
+
     </style>
 
 </head>
@@ -491,6 +505,9 @@
     modal.style.left = "50%";
     modal.style.transform = "translate(-50%, -50%)";
     modal.style.padding = "100px";
+    modal.style.width = "100%"; // Set width relative to the viewport
+    modal.style.maxWidth = "500px"; // Set a max-width for larger screens
+    modal.style.height = "auto"; // Adjust height to content
     modal.style.background = "#fff";
     modal.style.borderRadius = "8px";
     modal.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.1)";
