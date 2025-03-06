@@ -10,10 +10,14 @@
         <div id="paywall-overlay">
             <div id="paywall-modal">
                 <div id="paywall-step-1">
-                    <p>Enjoying this content? Continue reading!</p>
-                    <button id="paywall-continue">Continue</button>
+                    <h1 class="paywall-header">Pay As You Go.</h1>
+                    <h2 class="paywall-subheader">No subscriptions. No surprises.</p>
+                    <button id="paywall-continue">REVEAL ARTICLE $0.49</button>
+                    <p class="paywall-body">Powered by OptiGo</p>
                 </div>
                 <div id="paywall-step-2" class="hidden">
+                    <h1>Pay As You Go.</h1>
+                    <p>No subscriptions. No surprises.</p>
                     <p>Enter your name to continue:</p>
                     <input type="text" id="paywall-name" />
                     <button id="paywall-name-btn">Next</button>

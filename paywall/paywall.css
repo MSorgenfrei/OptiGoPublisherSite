@@ -1,17 +1,19 @@
+/* Paywall Overlay */
 #paywall-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.5); /* Ensures slight darkening */
+    background: rgba(0, 0, 0, 0.5); /* Darkens background */
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    backdrop-filter: blur(5px); /* Blurs background only */
+    backdrop-filter: blur(5px); /* Blurs background content */
 }
 
+/* Paywall Modal */
 #paywall-modal {
     background: white;
     padding: 20px;
@@ -19,19 +21,67 @@
     max-width: 400px;
     text-align: center;
     border-radius: 10px;
-    z-index: 10000; /* Ensures it appears above overlay */
+    z-index: 10000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 #paywall-modal button {
-    padding: 10px 20px;
+    padding: 10px;
     border: none;
     background: #007bff;
     color: white;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 10px;
+    margin: 10px;
 }
 
 .hidden {
     display: none;
+}
+
+/* Typography */
+.paywall-header {
+    font-size: 2rem; /* Large header */
+    font-weight: bold;
+}
+
+.paywall-subheader {
+    font-size: 1.5rem; /* Sub-header */
+    font-weight: 600;
+}
+
+.paywall-body {
+    font-size: 1.2rem; /* Regular body text */
+}
+
+.paywall-small {
+    font-size: 1rem; /* Smaller body text */
+}
+
+.paywall-fineprint {
+    font-size: 0.8rem; /* Fine print */
+    color: gray;
+}
+
+/* Responsive text scaling for mobile */
+@media (max-width: 768px) {
+    .paywall-header {
+        font-size: 1.8rem;
+    }
+
+    .paywall-subheader {
+        font-size: 1.3rem;
+    }
+
+    .paywall-body {
+        font-size: 1.1rem;
+    }
+
+    .paywall-small {
+        font-size: 0.9rem;
+    }
+
+    .paywall-fineprint {
+        font-size: 0.7rem;
+    }
 }
