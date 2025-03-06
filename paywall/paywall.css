@@ -33,6 +33,7 @@
     border-radius: 5px;
     cursor: pointer;
     margin: 10px;
+    white-space: nowrap;
 }
 
 .hidden {
@@ -46,12 +47,14 @@
 }
 
 .paywall-subheader {
-    font-size: 1.5rem; /* Sub-header */
-    font-weight: 600;
+    font-size: 1.1rem; /* Sub-header */
+    font-weight: 100;
+    margin-top: -5px;
 }
 
 .paywall-body {
     font-size: 1.2rem; /* Regular body text */
+    margin-top: 10px;
 }
 
 .paywall-small {
@@ -62,6 +65,7 @@
     font-size: 0.8rem; /* Fine print */
     color: gray;
     margin-top: 10px;
+    margin-bottom: -5px;
 }
 
 /* Responsive text scaling for mobile */
