@@ -16,14 +16,20 @@
                     <p class="paywall-body">Powered by OptiGo</p>
                 </div>
                 <div id="paywall-step-2" class="hidden">
-                    <h1>Pay As You Go.</h1>
-                    <p>No subscriptions. No surprises.</p>
-                    <p>Enter your name to continue:</p>
-                    <input type="text" id="paywall-name" />
-                    <button id="paywall-name-btn">Next</button>
+                    <h1 class="paywall-header">Pay As You Go.</h1>
+                    <h2 class="paywall-subheader">No subscriptions. No surprises.</p>
+                    <p class="paywall-small">Enter your phone number:</p>
+                    <input type="text" id="paywall-phone" />
+                    <button id="paywall-phone-btn">Next</button>
+                    <p class="paywall-body">Powered by OptiGo</p>
+                    <p class="paywall-small">New to OptiGo? Only takes 2 minutes to sign up.</p>
+                    <p class="paywall-small">OptiGo users get instant access.</p>
+                    <p class="paywall-fineprint">By clicking "Next" you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
                 </div>
                 <div id="paywall-step-3" class="hidden">
-                    <p>Enter your email:</p>
+                    <h1 class="paywall-header">Load Your Wallet.</h1>
+                    <h2 class="paywall-subheader">Keep a balance with OptiGo for instant access to sites. Withdraw anytime at <a href="https://msorgenfrei.github.io/OptiGoPublisherSite/">OptiGo.com</a></p>
+                    <p class="paywall-small">Enter your phone number:</p>
                     <input type="email" id="paywall-email" />
                     <button id="paywall-submit">Finish</button>
                 </div>
@@ -47,7 +53,7 @@
         step2.classList.remove("hidden");
     });
 
-    document.getElementById("paywall-name-btn").addEventListener("click", () => {
+    document.getElementById("paywall-phone-btn").addEventListener("click", () => {
         step2.classList.add("hidden");
         step3.classList.remove("hidden");
     });

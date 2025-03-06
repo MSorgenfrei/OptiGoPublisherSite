@@ -61,6 +61,7 @@
 .paywall-fineprint {
     font-size: 0.8rem; /* Fine print */
     color: gray;
+    margin-top: 10px;
 }
 
 /* Responsive text scaling for mobile */
