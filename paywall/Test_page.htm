@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiGo Publishing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PT Sans', serif;
+        }
+        
+        body {
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 30px;
+        }
+        
+        .site-name {
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px 0;
+        }
+        
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        .main-nav li {
+            margin-right: 25px;
+        }
+        
+        .main-nav a {
+            text-decoration: none;
+            color: #333333;
+            font-weight: 400;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .main-nav a:hover {
+            color: #1a73e8;
+        }
+        
+        .hero-section {
+            display: flex;
+            margin-bottom: 40px;
+            gap: 30px;
+        }
+        
+        .featured-article {
+            flex: 2;
+            position: relative;
+        }
+        
+        .featured-article img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+        }
+        
+        .featured-article-info {
+            position: absolute;
+            bottom: 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            width: 100%;
+            color: white;
+        }
+        
+        .featured-article-info h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .featured-article-info p {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .featured-tag {
+            background: #e63946;
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .top-stories {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .story-card {
+            display: flex;
+            gap: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .story-card:last-child {
+            border-bottom: none;
+        }
+        
+        .story-card img {
+            width: 120px;
+            height: 80px;
+            object-fit: cover;
+        }
+        
+        .story-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .story-info p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .category-section {
+            margin: 50px 0;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .article-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        
+        .article-card {
+            margin-bottom: 25px;
+        }
+        
+        .article-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        
+        .article-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .article-card p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .category-tag {
+            display: inline-block;
+            background: #f8f9fa;
+            color: #333;
+            padding: 3px 8px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        
+        footer {
+            margin-top: 50px;
+            padding: 30px 0;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #666;
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .date {
+            color: #666;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+        .social-share {
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .social-share a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #1a73e8;
+        }
+        .article-header {
+            margin-bottom: 40px;
+        }
+        
+        .article-header img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+        
+        .article-meta {
+            margin-bottom: 20px;
+        }
+        
+        .article-category {
+            background: #e63946;
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .article-title {
+            font-size: 2.8rem;
+            line-height: 1.2;
+            margin-bottom: 15px;
+        }
+        
+        .article-subtitle {
+            font-size: 1.5rem;
+            font-weight: normal;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        
+        .article-info {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .article-info span {
+            margin-right: 15px;
+        }
+        
+        .article-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .article-content p {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+        
+        .article-content h2 {
+            font-size: 1.8rem;
+            margin: 40px 0 20px;
+        }
+        
+        .article-content h3 {
+            font-size: 1.5rem;
+            margin: 30px 0 15px;
+        }
+        
+        .article-content img {
+            width: 100%;
+            margin: 30px 0;
+        }
+        
+        .article-content figcaption {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            margin-top: -20px;
+            margin-bottom: 30px;
+        }
+        
+        .article-content ul, .article-content ol {
+            margin-bottom: 25px;
+            padding-left: 40px;
+        }
+        
+        .article-content li {
+            margin-bottom: 10px;
+        }
+        
+        .pull-quote {
+            border-left: 4px solid #1a73e8;
+            padding: 15px 30px;
+            margin: 30px 0;
+            font-size: 1.4rem;
+            font-style: italic;
+            color: #555;
+        }
+        
+        .pull-quote-attribution {
+            display: block;
+            font-size: 1rem;
+            font-style: normal;
+            text-align: right;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                flex-direction: column;
+            }
+            
+            .article-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .article-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="site-name">OptiGo Publishing</div>
+        <nav>
+            <div class="main-nav">
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="#Food">Food</a></li>
+                    <li><a href="#Beauty">Beauty</a></li>
+                    <li><a href="#Finance">Finance</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    
+    <main>
+        <article class="article-content">
+            <div class="article-header">
+                <img src="https://images.unsplash.com/photo-1457364887197-9150188c107b?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8cm9ja2V0fGVufDB8fDB8fHww" alt="Bonus, not taxes image">
+                <div class="article-meta">
+                    <h1 class="article-title">The Secret Burger</h1>
+                    <h2 class="article-subtitle">Chef's don't want you to know this burger exist.</h2>
+                    <div class="article-info">
+                        <span>By Chef BordainGPT</span>
+                        <span>2 min read</span>
+                    </div>
+                </div>
+            </div>
+            
+            <p>Some things aren't meant to be found. Some things exist in the twilight between rumor and religion, whispered about in late-night kitchens and behind locked walk-ins, never spoken above a murmur, never revealed to outsiders. This is not an invitation. It’s barely a confession.</p>
+           
+            <p>There is a burger. It has no name. It lives at a place called HogFrei, a restaurant that technically exists, but only if you know where to look. If you walk in asking for it, you’ve already failed. It isn’t on the menu. It isn’t written down. If you have to ask, you don’t deserve it.</p>
+            
+            <p>HogFrei, somewhere in the back alleys of a city I won’t name, isn’t the kind of place that wants your attention. It doesn’t want influencers or food writers looking to add another notch to their overfed belts. It’s a place for chefs, by chefs, and if you don’t know someone in the kitchen, you’re not getting in. The burger—if you’re lucky enough to have one placed in front of you—will ruin all others forever. A stack of impossibly seared beef, fat melting into the griddle like a whispered promise, layered with cheese so precisely melted it seems to have been engineered rather than cooked. The bun? It’s just a vehicle, barely able to contain what is essentially a religious experience between bread.</p>
+
+            <p>No one agrees on the details. Some say there's bone marrow in the grind. Others swear by dry-aged beef, tallow-brushed and kissed with fire. There’s no lettuce, no tomato, no meaningless gestures toward balance or health. Just meat, cheese, bread, and a hint of something illicit—some secret alchemy known only to those who have spent decades behind the line, burning their hands and their souls in the pursuit of something perfect.</p>
+
+            <p>You don’t find the HogFrei burger. It finds you. Maybe you’ll hear about it from a sous chef three drinks deep at an after-hours bar. Maybe you’ll catch a glimpse of it in a grainy, unauthorized photo, snapped in a moment of weakness. Maybe you never will, and maybe that’s for the best.</p>
+
+            <p>Some things aren’t meant to be shared. Some things exist only for those who understand why they should never be spoken of at all.</p>
+
+            <div class="social-share">
+                <p>Share this article:</p>
+                <a href="#" aria-label="Share on Twitter">Twitter</a>
+                <a href="#" aria-label="Share on Facebook">Facebook</a>
+                <a href="#" aria-label="Share on LinkedIn">LinkedIn</a>
+                <a href="#" aria-label="Share via Email">Email</a>
+            </div>
+ 
+            <section id="For_Your" class="category-section">
+                <h2 class="section-title">For You</h2>
+                <div class="article-grid">
+                    <div class="article-card">
+                        <a href="../Articles/Burger_article.html">
+                            <img src="https://images.unsplash.com/photo-1499028344343-cd173ffc68a9?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGZvb2R8ZW58MHx8MHx8fDA%3D" alt="Burger article image">
+                            <h3>The Secret Burger</h3>
+                            <p>Chef's don't want you to know this burger exist.</p>
+                        </a>
+                    </div>
+                    
+                    <div class="article-card">
+                        <a href="../Articles/Clean_Beauty_article.html">
+                            <img src="https://plus.unsplash.com/premium_photo-1661333504164-1f272e54e3c4?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8Y2xlYW4lMjBiZWF1dHl8ZW58MHx8MHx8fDA%3D" alt="Beauty article image">
+                            <h3>Best Clean Products For The Winter</h3>
+                            <p>Beauticians say these are a must for surviving the winter.</p>
+                    </a>
+                    </div>
+                    
+                    <div class="article-card">
+                        <a href="../Articles/Crypto_article.html">
+                            <img src="https://images.unsplash.com/photo-1702288138410-a6b48798ea66?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGNvY2t0YWlscyUyMHBhcnR5fGVufDB8fDB8fHww" alt="Crypto story image">
+                            <h3>Cocktail Party Survival: Crypto Edition</h3>
+                            <p>Insights that will get you through any crypto convo.</p>
+                    </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 OptiGo Publishing. All rights reserved.</p>
+            <p>Contact: optigo.publishing@optigo.com</p>
+            <div class="social-links">
+                <a href="#" aria-label="Twitter">Twitter</a> | 
+                <a href="#" aria-label="LinkedIn">LinkedIn</a> | 
+                <a href="#" aria-label="Instagram">Instagram</a>
+            </div>
+        </footer>
+        </body>
+    </html>
+    
