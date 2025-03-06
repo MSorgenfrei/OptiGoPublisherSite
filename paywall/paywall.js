@@ -1,11 +1,18 @@
 (() => {
-    // Only run the paywall once per session
-    if (sessionStorage.getItem('paywallPassed')) return;
+    // Get the current page URL to store per-page access
+    const pageKey = `paywallPassed_${window.location.pathname}`;
+
+    // Only run the paywall if the user hasn't completed it for this page
+    if (sessionStorage.getItem(pageKey)) return;
 
     // Create modal HTML
     const modalHTML = `
-        <div id="paywall-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 9999;">
-            <div id="paywall-modal" style="background: white; padding: 20px; width: 90%; max-width: 400px; text-align: center; border-radius: 10px;">
+        <div id="paywall-overlay" 
+        style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+        display: flex; justify-content: center; align-items: center; z-index: 9999;
+        background: rgba(0, 0, 0, 0.7); ">
+            <div id="paywall-modal" 
+            style="background: white; padding: 20px; width: 90%; max-width: 400px; text-align: center; border-radius: 10px;">
                 <div id="paywall-step-1">
                     <p>Enjoying this content? Continue reading!</p>
                     <button id="paywall-continue" style="padding: 10px 20px; border: none; background: #007bff; color: white; border-radius: 5px; cursor: pointer;">Continue</button>
