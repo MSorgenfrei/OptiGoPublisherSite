@@ -19,13 +19,10 @@
                     <p class="paywall-fineprint", marging-bottom; -10px;>The Marina Daily uses OptiGo for </p>
                     <h1 class="paywall-header">Pay As You Go.</h1>
                     <h2 class="paywall-subheader">No subscriptions. No surprises.</p>
-                    <p class="paywall-body">Enter your phone number:</p>
+                    <p class="paywall-body">Enter Phone Number:</p>
                     <input type="text" id="paywall-phone" />
                     <button id="paywall-phone-btn">Next</button>
-                    <p class="paywall-body">Powered by OptiGo</p>
-                    <p class="paywall-small">New to OptiGo? Only takes 2 minutes to sign up.</p>
-                    <p class="paywall-small">Powered by OptiGo</p>
-                    <p class="paywall-fineprint">By clicking "Next" you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+                    <p class="paywall-fineprint">By clicking "Next" you agree to our <a href="#">Terms of Service</a>.</p>
                 </div>
                 <div id="paywall-step-3" class="hidden">
                     <h1 class="paywall-header">Load Your Wallet.</h1>

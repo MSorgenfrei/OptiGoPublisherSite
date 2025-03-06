@@ -53,12 +53,12 @@
 }
 
 .paywall-body {
-    font-size: 1.2rem; /* Regular body text */
-    margin-top: 10px;
+    font-size: 1rem; /* Regular body text */
+    margin-top: 20px;
 }
 
 .paywall-small {
-    font-size: 1rem; /* Smaller body text */
+    font-size: 0.9rem; /* Smaller body text */
 }
 
 .paywall-fineprint {
