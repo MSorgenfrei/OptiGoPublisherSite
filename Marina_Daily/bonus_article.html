@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Marina Daily</title>
-
-
-
     <style>
         * {
             margin: 0;
@@ -466,6 +463,12 @@
                 </div>
             </section>
         </main>
+
+        <!-- Style Guide -->
+         <link rel="stylesheet" href="../paywall/CSS/paywall.css">
+
+        <!-- Script -->
+        <script src="../paywall/JS/Paywall.js"></script>
         
         <footer>
             <p>&copy; 2025 OptiGo Publishing. All rights reserved.</p>
@@ -476,144 +479,6 @@
                 <a href="#" aria-label="Instagram">Instagram</a>
             </div>
         </footer>
-
-        <script type="module">
-            // Import the functions you need from the SDKs you need
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-            import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
-            import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
-        
-            const firebaseConfig = {
-                apiKey: "Just an example",
-                authDomain: "optigo-publishingfake-demo.firebaseapp.com",
-                projectId: "optigo-fake-demo",
-                storageBucket: "optigo-publishingfake-demo.firebasestorage.app",
-                messagingSenderId: "example",
-                appId: "example",
-                measurementId: "G-testing"
-            };
-        
-            // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
-            const analytics = getAnalytics(app);
-            const auth = getAuth();
-        
-            (function() {
-                // Create the blurred overlay (hidden initially)
-                const paywall = document.createElement("div");
-                paywall.style.position = "fixed";
-                paywall.style.top = "0";
-                paywall.style.left = "0";
-                paywall.style.width = "100%";
-                paywall.style.height = "100%";
-                paywall.style.background = "rgba(255, 255, 255, 0.8)";
-                paywall.style.backdropFilter = "blur(5px)";
-                paywall.style.zIndex = "1000";
-                paywall.style.display = "none"; // Initially hidden
-        
-                // Create the modal container (hidden initially)
-                const modal = document.createElement("div");
-                modal.style.position = "fixed";
-                modal.style.top = "50%";
-                modal.style.left = "50%";
-                modal.style.transform = "translate(-50%, -50%)";
-                modal.style.padding = "30px 10px 30px 10px";
-                modal.style.width = "90vw";
-                modal.style.maxWidth = "500px";
-                modal.style.height = "auto";
-                modal.style.background = "#fff";
-                modal.style.borderRadius = "8px";
-                modal.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.1)";
-                modal.style.zIndex = "1001";
-                modal.style.textAlign = "center";
-                modal.style.display = "none"; // Initially hidden
-                modal.innerHTML = `
-                    <h1>Pay As You Go.</h1>
-                    <p>No subscriptions. No surprises.</p>
-                    <button id="continueBtn" style="padding: 12px 25px; background: #007BFF; color: white; border: none; cursor: pointer; border-radius: 5px; margin-top: 30px; display: inline-block; text-align: center; margin-left: auto; margin-right: auto; white-space: nowrap;">
-                        REVEAL ARTICLE FOR $0.49
-                    </button>
-                    <small style="display: block; margin-top: 30px;">Powered by OptiGo.</small>
-                    <style>
-                        /* Media queries for smaller screens */
-                        @media (max-width: 600px) {
-                            h1 {
-                                font-size: 8vw;
-                            }
-                            p {
-                                font-size: 5vw;
-                            }
-                            button {
-                                font-size: 4vw;
-                            }
-                            small {
-                                font-size: 4vw;
-                            }
-                        }
-                    </style>
-                `;
-        
-                // Append elements to the page
-                document.body.appendChild(paywall);
-                document.body.appendChild(modal);
-        
-                // Function to show the paywall when scrolling below 25% of the page
-                function checkScroll() {
-                    const scrollPosition = window.scrollY;
-                    const pageHeight = document.documentElement.scrollHeight;
-        
-                    // If user scrolls below 25% of the total page height, show paywall
-                    if (scrollPosition > (pageHeight * 0.25)) {
-                        paywall.style.display = "block";
-                        modal.style.display = "block";
-                    }
-                }
-        
-                // Add scroll event listener
-                window.addEventListener("scroll", checkScroll);
-        
-                // Unlock function (called after successful phone number authentication)
-                window.unlockContent = function() {
-                    paywall.remove();
-                    modal.remove();
-                    window.removeEventListener("scroll", checkScroll);
-                };
-        
-                // Handle button click for phone authentication
-                document.addEventListener("click", function(event) {
-                    if (event.target.id === "continueBtn") {
-                        // Trigger phone number authentication
-                        const phoneNumber = prompt("Please enter your phone number (e.g., +1234567890):");
-            
-                        if (phoneNumber) {
-                            // Set up reCAPTCHA verifier
-                            const recaptchaVerifier = new RecaptchaVerifier('continueBtn', {
-                                'size': 'invisible',
-                                'callback': function(response) {
-                                    console.log("reCAPTCHA verified", response);
-                                }
-                            }, auth);
-            
-                            // Sign in with phone number
-                            signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier)
-                                .then((confirmationResult) => {
-                                    const verificationCode = prompt("Enter the verification code sent to your phone:");
-                                    return confirmationResult.confirm(verificationCode);
-                                })
-                                .then((result) => {
-                                    alert("Phone number verified successfully!");
-                                    // After successful verification, unlock content
-                                    unlockContent();
-                                })
-                                .catch((error) => {
-                                    alert("Error during phone authentication: " + error.message);
-                                });
-                        }
-                    }
-                });
-            })();
-        </script>
-        
 
         </body>
     </html>
