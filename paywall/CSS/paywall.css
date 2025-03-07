@@ -36,6 +36,7 @@
     white-space: nowrap;
 }
 
+/* To hide steps in modal */
 .hidden {
     display: none;
 }
@@ -89,4 +90,9 @@
     .paywall-fineprint {
         font-size: 0.7rem;
     }
+}
+
+/* ReCapthca container is .hidden */
+#recaptcha-container {
+    display: none;
 }
