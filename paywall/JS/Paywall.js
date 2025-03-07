@@ -92,18 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
         overlay.remove(); // Remove paywall from page
     });
 
-    // Check scroll position to show the paywall
-    function checkScroll() {
-        const scrollPosition = window.scrollY;
-        const pageHeight = document.documentElement.scrollHeight;
-
-        if (scrollPosition > (pageHeight * 0.25)) {
-            overlay.style.display = "flex";  // Show the overlay
-            overlay.style.backdropFilter = "blur(5px)";
-            window.removeEventListener("scroll", checkScroll); // Remove scroll listener after showing paywall
-        }
-    }
-
-    window.addEventListener("scroll", checkScroll);
+    setTimeout(() => {
+        overlay.style.display = "flex";  // Show the overlay
+        overlay.style.backdropFilter = "blur(5px)";
+    }, 2000);  // Delay in milliseconds (2000ms = 2 seconds)
+    
 
 });
