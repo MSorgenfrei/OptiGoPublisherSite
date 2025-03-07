@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <p class="text text-body">Enter Phone Number:</p>
                     <input type="text" id="paywall-phone"/>
                     <button class="btn" id="paywall-phone-btn">Next</button>
-                    <p class="text text-fineprint">By clicking "Next" you agree to our <a href="#" style="underline";>Terms of Service</a>.</p>
+                    <p class="text text-fineprint">By clicking "Next" you agree to our <a href="#">Terms of Service</a>.</p>
                 </div>
                 <div id="paywall-step-3" class="hidden">
                     <h1 class="text text-header">Load Your Wallet.</h1>
