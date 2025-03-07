@@ -1,3 +1,8 @@
+/* To hide steps in modal */
+.hidden {
+    display: none;
+}
+
 /* Paywall Overlay */
 #paywall-overlay {
     position: fixed;
@@ -16,7 +21,7 @@
 /* Paywall Modal */
 #paywall-modal {
     background: white;
-    padding: 20px;
+    padding: 50px 40px;
     width: 90%;
     max-width: 400px;
     text-align: center;
@@ -25,49 +30,119 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-#paywall-modal button {
-    padding: 10px;
+
+.btn {
+    padding: 5px 15px;
     border: none;
-    background: #007bff;
+    background: #60C0B2;
     color: white;
-    border-radius: 5px;
+    border-radius: 50px;
     cursor: pointer;
     margin: 10px;
+    Text-transform: uppercase;
+    font-weight: bolder;
+    font-size: 0.9rem;
     white-space: nowrap;
 }
+.btn-option {
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    color: #173E5A;
+    border-radius: 5px;
+    background: #F5F5F4;
+    border-width: 1px;
+    Text-transform: uppercase;
+    font-weight: 500;
+    font-size: 0.9rem;
+    white-space: nowrap;
 
-/* To hide steps in modal */
-.hidden {
-    display: none;
 }
 
 /* Typography */
-.paywall-header {
+.text{
+    font-family: 'stevie sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 150;
+    line-height: 1.1;
+    color: #173E5A;
+}
+.text-header {
     font-size: 2rem; /* Large header */
-    font-weight: bold;
+    font-weight: 350;
 }
 
-.paywall-subheader {
+.text-header2 {
+    font-size: 1.25rem; /* Large header */
+    font-weight: 250;
+}
+
+.text-subheader {
     font-size: 1.1rem; /* Sub-header */
-    font-weight: 100;
-    margin-top: -5px;
 }
 
-.paywall-body {
+.text-body {
     font-size: 1rem; /* Regular body text */
     margin-top: 20px;
 }
 
-.paywall-small {
+.text-small {
     font-size: 0.9rem; /* Smaller body text */
 }
 
-.paywall-fineprint {
+.text-fineprint {
     font-size: 0.8rem; /* Fine print */
-    color: gray;
-    margin-top: 10px;
-    margin-bottom: -5px;
+    font-weight: 100;
 }
+
+/* Hide the default checkbox */
+.checkbox {
+    display: none;
+  }
+  
+  /* Style the custom checkbox */
+  .custom-checkbox {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .checkbox-label {
+    position: relative;
+    padding-left: 20px;  /* Space for custom checkbox */
+    font-size: 0.8rem;
+    user-select: none;   /* Prevent text selection */
+  }
+  
+  /* The custom checkbox */
+  .checkbox-label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 15px;
+    height: 15px;
+    border: 1px solid #173E5A;
+    border-radius: 5px;
+    background-color: white;
+    transition: background-color 0.3s, border 0.3s;
+  }
+  
+  /* Style when the checkbox is checked */
+  .checkbox:checked + .checkbox-label::before {
+    background-color: #173E5A;
+    border-color: #173E5A;
+  }
+  
+  /* Add a checkmark when checked */
+  .checkbox:checked + .checkbox-label::after {
+    content: '✔';
+    position:absolute;
+    left: 2px;
+    top: 2px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 100;
+  }  
 
 /* Responsive text scaling for mobile */
 @media (max-width: 768px) {
