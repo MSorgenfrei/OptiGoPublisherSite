@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
         overlay.style.display = "flex";  // Show the overlay
         overlay.style.backdropFilter = "blur(5px)";
-    }, 2000);  // Delay in milliseconds (2000ms = 2 seconds)
+    }, 1500);  // Delay in milliseconds (2000ms = 2 seconds)
     
 
 });
