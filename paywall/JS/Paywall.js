@@ -13,25 +13,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div id="paywall-step-1">
                     <h1 class="text text-header">Pay As You Go.</h1>
                     <h2 class="text text-subheader">No subscriptions. No surprises.</h2>
-                    <button class="btn" style="margin: 50px; border-radius: 5px; padding: 10px 20px" id="paywall-continue">Reveal Article $0.49</button>
+                    <button class="btn" style="margin: 40px; border-radius: 5px; padding: 10px 20px" id="paywall-continue">Reveal Article $0.49</button>
                     <p class="text text-small">Powered by <syle="font-weight: 700;">OptiGo</p>
                 </div>
                 <div id="paywall-step-2" class="hidden">
                     <h1 class="text text-header2">
-                    <span syle="font-weight: 700;">The Marina Daily</span> uses 
-                    <span syle="font-weight: 700;">OptiGo</span> for pay-as-you-go access.
+                        <span syle="font-weight: 700;">The Marina Daily</span> uses 
+                        <span syle="font-weight: 700;">OptiGo</span> for pay-as-you-go access.
                     </h1>
-                    <p class="text text-body">Enter Phone Number:</p>
-                    <input type="text" id="paywall-phone"/>
-                    <button class="btn" id="paywall-phone-btn">Next</button>
-                    <p class="text text-fineprint">By clicking "Next" you agree to our <a href="#">Terms of Service</a>.</p>
+                    <div style="text-align: center; margin: 30px 5px">
+                        <p class="text text-body">Enter your phone number.</p>
+                        <input type="text" class="input-field text text-body" id="paywall-phone" placeholder="1 650 421 1988" required/>
+                    </div>
+                 <button class="btn" id="paywall-phone-btn">Next</button> 
+                 <p class="text text-fineprint" style="margin-top: 10px";>By clicking "Next" you agree to our <a href="#">Terms of Service</a>.</p>
                 </div>
                 <div id="paywall-step-3" class="hidden">
-                    <h1 class="text text-header">Load Your Wallet.</h1>
-                    <h2 class="text text-subheader">Keep a balance with OptiGo for instant access to sites.</h2> 
-                        <div style="text-align: center; margin: 30px; white-space: nowrap;">
-                            <p class="text text-body">Withdraw anytime at <a href="https://msorgenfrei.github.io/OptiGoPublisherSite/">OptiGo.</a></p>
-                            <div style="display: flex; justify-content: center; gap: 10px; margin: 10px;">
+                     <h1 class="text text-header2"> 
+                        <span syle="font-weight: 700;">Load your wallet</span> for instant access to all OptiGo sites.
+                    </h1>
+                        <div style="text-align: center; margin: 30px 5px">
+                            <p class="text text-body">Choose Amount.</p> 
+                            <p class="text text-body"> Withdraw anytime at <a href="https://msorgenfrei.github.io/OptiGoPublisherSite/">OptiGo.</a></p>
+                            <div class="button-container" style="margin: 10px;">
                                 <button class="btn btn-option">$2.50</button>
                                 <button class="btn btn-option">$5</button>
                                 <button class="btn btn-option">$10</button>

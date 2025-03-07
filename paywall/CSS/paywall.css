@@ -30,6 +30,14 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Button styling */
+
+.button-container {
+    display: flex;
+    flex-direction: column; /* Stacks buttons vertically */
+    justify-content: center; /* Vertically centers the items */
+    align-items: center; /* Horizontally centers the items */
+}
 
 .btn {
     padding: 5px 15px;
@@ -45,17 +53,35 @@
     white-space: nowrap;
 }
 .btn-option {
-    padding: 10px 20px;
-    font-size: 1.1rem;
+    padding: 10px;
+    min-width: 80%;
+    max-width: 90%;
+    font-size: 1rem;
     color: #173E5A;
     border-radius: 5px;
-    background: #F5F5F4;
-    border-width: 1px;
+    background: none;
+    border: 1px solid #173E5A;
     Text-transform: uppercase;
     font-weight: 500;
     font-size: 0.9rem;
     white-space: nowrap;
+}
 
+/* Input field */
+.input-field {
+    margin: 10px 0;
+    padding: 10px;
+    min-width: 80%;
+    max-width: 90%;
+    font-size: 1.1rem;
+    border: 1px solid #173E5A;
+    border-radius: 5px;
+    box-sizing: border-box;  /* Ensures padding doesn't affect the overall width */
+}
+
+.input-field::placeholder {
+    color: #173E5A;  /* Gray color for the placeholder text */
+    opacity: 0.4;  /* Make the placeholder text slightly transparent */
 }
 
 /* Typography */
@@ -82,7 +108,6 @@
 
 .text-body {
     font-size: 1rem; /* Regular body text */
-    margin-top: 20px;
 }
 
 .text-small {
@@ -119,17 +144,16 @@
     position: absolute;
     left: 0;
     top: 0;
-    width: 15px;
-    height: 15px;
+    width: 0.8rem;
+    height: 0.8rem;
     border: 1px solid #173E5A;
-    border-radius: 5px;
+    border-radius: 2px;
     background-color: white;
     transition: background-color 0.3s, border 0.3s;
   }
   
   /* Style when the checkbox is checked */
   .checkbox:checked + .checkbox-label::before {
-    background-color: #173E5A;
     border-color: #173E5A;
   }
   
@@ -139,30 +163,30 @@
     position:absolute;
     left: 2px;
     top: 2px;
-    color: white;
+    color: #173E5A;
     font-size: 1rem;
     font-weight: 100;
   }  
 
 /* Responsive text scaling for mobile */
 @media (max-width: 768px) {
-    .paywall-header {
+    .text-header {
         font-size: 1.8rem;
     }
 
-    .paywall-subheader {
+    .text-subheader {
         font-size: 1.3rem;
     }
 
-    .paywall-body {
+    .text-body {
         font-size: 1.1rem;
     }
 
-    .paywall-small {
+    .text-small {
         font-size: 0.9rem;
     }
 
-    .paywall-fineprint {
+    .text-fineprint {
         font-size: 0.7rem;
     }
 }
