@@ -92,7 +92,7 @@
     }
 }
 
-/* ReCapthca container is .hidden */
-#recaptcha-container {
+.hidden {
     display: none;
 }
+

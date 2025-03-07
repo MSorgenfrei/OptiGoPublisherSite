@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+
     // Get the current page URL to store per-page access
     const pageKey = `paywallPassed_${window.location.pathname}`;
 
@@ -20,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <h1 class="paywall-header">Pay As You Go.</h1>
                     <h2 class="paywall-subheader">No subscriptions. No surprises.</h2>
                     <p class="paywall-body">Enter Phone Number:</p>
-                    <input type="text" id="paywall-phone" />
+                    <input type="text" id="paywall-phone"/>
                     <button id="paywall-phone-btn">Next</button>
                     <p class="paywall-fineprint">By clicking "Next" you agree to our <a href="#">Terms of Service</a>.</p>
                     <div id="recaptcha-container"></div>
@@ -34,76 +35,43 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
     `;
 
-    // Inject modal into the page
     document.body.insertAdjacentHTML('beforeend', modalHTML);
-    document.body.style.filter = "none";
 
-    // Element references
     const overlay = document.getElementById("paywall-overlay");
-    const modal = document.getElementById("paywall-modal");
     const step1 = document.getElementById("paywall-step-1");
     const step2 = document.getElementById("paywall-step-2");
     const step3 = document.getElementById("paywall-step-3");
-    const phoneInput = document.getElementById("paywall-phone");
-    const phoneBtn = document.getElementById("paywall-phone-btn");
+    const finishButton = document.getElementById("paywall-submit");
 
+    //Hide step 1 and show step 2 when 1 is done
     document.getElementById("paywall-continue").addEventListener("click", () => {
         step1.classList.add("hidden");
         step2.classList.remove("hidden");
     });
-
-    // Required recaptcha verifier
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-        size: 'invisible',
-        callback: (response) => {
-            console.log("Recaptcha solved");
-        }
+    //Hide step 2 and show step 3 when 2 is done
+    document.getElementById("paywall-phone-btn").addEventListener("click", () => {
+        step2.classList.add("hidden");
+        step3.classList.remove("hidden");
     });
 
-    phoneBtn.addEventListener("click", () => {
-        const phoneNumber = phoneInput.value;
-        const appVerifier = window.recaptchaVerifier;
-
-        firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
-            .then((confirmationResult) => {
-                window.confirmationResult = confirmationResult;
-                phoneInput.value = ""; // Clear input for OTP entry
-                phoneInput.placeholder = "Enter OTP";
-                phoneBtn.textContent = "Submit OTP";
-                phoneBtn.removeEventListener("click", () => {}); // No undefined function error
-                phoneBtn.addEventListener("click", handleOTPVerification);
-            })
-            .catch((error) => {
-                console.error("SMS not sent", error);
-            });
+      // Remove paywall on "Finish" and grant access to the page
+      finishButton.addEventListener("click", () => {
+        sessionStorage.setItem(pageKey, "true"); // Store session access for this page
+        overlay.remove(); // Remove paywall from page
     });
 
-    function handleOTPVerification() {
-        const otpCode = phoneInput.value;
-        window.confirmationResult.confirm(otpCode)
-            .then((result) => {
-                step2.classList.add("hidden");
-                step3.classList.remove("hidden");
-            })
-            .catch((error) => {
-                console.error("OTP verification failed", error);
-            });
-    }
-
-    // Function to show the paywall when scrolling below 25% of the page
+    // Check scroll position to show the paywall
     function checkScroll() {
         const scrollPosition = window.scrollY;
         const pageHeight = document.documentElement.scrollHeight;
 
-        // If user scrolls below 25% of the total page height, show paywall
         if (scrollPosition > (pageHeight * 0.25)) {
-            overlay.style.display = "flex";
-            modal.style.display = "block";
-            document.getElementById("paywall-overlay").style.backdropFilter = "blur(5px)";
-            window.removeEventListener("scroll", checkScroll); // Remove event listener once triggered
+            overlay.style.display = "flex";  // Show the overlay
+            overlay.style.backdropFilter = "blur(5px)";
+            window.removeEventListener("scroll", checkScroll); // Remove scroll listener after showing paywall
         }
     }
 
-    // Attach scroll event listener
     window.addEventListener("scroll", checkScroll);
+
 });
