@@ -52,6 +52,14 @@ document.addEventListener("DOMContentLoaded", () => {
         step2.classList.remove("hidden");
     });
 
+    // Required recaptcha verifier
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        size: 'invisible',
+        callback: (response) => {
+            console.log("Recaptcha solved");
+        }
+    });
+
     phoneBtn.addEventListener("click", () => {
         const phoneNumber = phoneInput.value;
         const appVerifier = window.recaptchaVerifier;
@@ -62,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 phoneInput.value = ""; // Clear input for OTP entry
                 phoneInput.placeholder = "Enter OTP";
                 phoneBtn.textContent = "Submit OTP";
-                phoneBtn.removeEventListener("click", handlePhoneVerification);
+                phoneBtn.removeEventListener("click", () => {}); // No undefined function error
                 phoneBtn.addEventListener("click", handleOTPVerification);
             })
             .catch((error) => {
@@ -81,14 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("OTP verification failed", error);
             });
     }
-
-    // Required recaptcha verifier
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-        size: 'invisible',
-        callback: (response) => {
-            console.log("Recaptcha solved");
-        }
-    });
 
     // Function to show the paywall when scrolling below 25% of the page
     function checkScroll() {
