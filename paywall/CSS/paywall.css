@@ -67,6 +67,13 @@
     white-space: nowrap;
 }
 
+/* Active button style */
+.btn-option.active {
+    background-color: #173E5A; /* Active background color */
+    color: white; /* White text when active */
+    border: 1px solid #173E5A; /* Ensure border matches background when active */
+}
+
 /* Input field */
 .input-field {
     margin: 10px 0;

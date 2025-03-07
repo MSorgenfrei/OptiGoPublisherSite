@@ -29,26 +29,25 @@ document.addEventListener("DOMContentLoaded", () => {
                  <p class="text text-fineprint" style="margin-top: 10px";>By clicking "Next" you agree to our <a href="#">Terms of Service</a>.</p>
                 </div>
                 <div id="paywall-step-3" class="hidden">
-                     <h1 class="text text-header2"> 
-                        <span syle="font-weight: 700;">Load your wallet</span> for instant access to all OptiGo sites.
+                    <h1 class="text text-header2">
+                        <span style="font-weight: 700;">Load your wallet</span> for instant access to all OptiGo sites.
                     </h1>
-                        <div style="text-align: center; margin: 30px 5px">
-                            <p class="text text-body">Choose Amount.</p> 
-                            <p class="text text-body"> Withdraw anytime at <a href="https://msorgenfrei.github.io/OptiGoPublisherSite/">OptiGo.</a></p>
-                            <div class="button-container" style="margin: 10px;">
-                                <button class="btn btn-option">$2.50</button>
-                                <button class="btn btn-option">$5</button>
-                                <button class="btn btn-option">$10</button>
-                            </div>
+                    <div style="text-align: center; margin: 30px 5px">
+                        <p class="text text-body">Choose Amount.</p> 
+                        <p class="text text-body">Withdraw anytime at <a href="https://msorgenfrei.github.io/OptiGoPublisherSite/">OptiGo.</a></p>
+                        <div class="button-container" style="margin: 10px;">
+                            <button class="btn btn-option" data-amount="$2.50">$2.50</button>
+                            <button class="btn btn-option" data-amount="$5">$5</button>
+                            <button class="btn btn-option" data-amount="$10">$10</button>
+                        </div>
                         <p class="text text-fineprint">
                             <label class="custom-checkbox">
-                            <input type="checkbox" class="checkbox" checked>
-                            <span class="checkbox-label">Auto-reload my wallet at $0.50.</span>
+                                <input type="checkbox" class="checkbox" checked>
+                                <span class="checkbox-label">Auto-reload my wallet at $0.50.</span>
                             </label>
-                         </p>
-                        </div>
+                        </p>
+                    </div>
                     <button class="btn" id="paywall-submit">Finish</button>
-              
                 </div>
             </div>
         </div>
@@ -72,6 +71,20 @@ document.addEventListener("DOMContentLoaded", () => {
         step2.classList.add("hidden");
         step3.classList.remove("hidden");
     });
+
+    // Select all the buttons with the class "btn-option"
+    const buttons = document.querySelectorAll('.btn-option');
+
+    // Loop through each button and add an event listener for clicks
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove the 'active' class from all buttons
+            buttons.forEach(btn => btn.classList.remove('active'));
+        
+        // Add the 'active' class to the clicked button
+        button.classList.add('active');
+    });
+});
 
       // Remove paywall on "Finish" and grant access to the page
       finishButton.addEventListener("click", () => {
