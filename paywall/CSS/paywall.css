@@ -31,7 +31,6 @@
 }
 
 /* Button styling */
-
 .button-container {
     display: flex;
     flex-direction: column; /* Stacks buttons vertically */
@@ -63,7 +62,6 @@
     border: 1px solid #173E5A;
     Text-transform: uppercase;
     font-weight: 500;
-    font-size: 0.9rem;
     white-space: nowrap;
 }
 
@@ -80,7 +78,7 @@
     padding: 10px;
     min-width: 80%;
     max-width: 90%;
-    font-size: 1.1rem;
+    font-size: 1rem;
     border: 1px solid #173E5A;
     border-radius: 5px;
     box-sizing: border-box;  /* Ensures padding doesn't affect the overall width */
@@ -89,6 +87,8 @@
 .input-field::placeholder {
     color: #173E5A;  /* Gray color for the placeholder text */
     opacity: 0.4;  /* Make the placeholder text slightly transparent */
+    font-weight: 250;
+    font-size: 1rem;
 }
 
 /* Typography */

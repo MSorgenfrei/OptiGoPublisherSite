@@ -14,15 +14,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     <h1 class="text text-header">Pay As You Go.</h1>
                     <h2 class="text text-subheader">No subscriptions. No surprises.</h2>
                     <button class="btn" style="margin: 40px; border-radius: 5px; padding: 10px 20px" id="paywall-continue">Reveal Article $0.49</button>
-                    <p class="text text-small">Powered by <syle="font-weight: 700;">OptiGo</p>
+                    <p class="text text-small">Powered by <syle="font-weight: 700;">OptiGo.</p>
                 </div>
                 <div id="paywall-step-2" class="hidden">
-                    <h1 class="text text-header">Pay As You Go.</h1>
-                    <h2 class="text text-subheader">No subscriptions. No surprises.</h2>
+                    <h1 class="text text-header2">
+                            <span style="font-weight: 700;">The Marina Daily</span> uses 
+                            <span style="font-weight: 700;">OptiGo</span> for pay as you go access.</h1>
                  <div style="text-align: center; margin: 30px 5px">
-                        <h1 class="text text-body">
-                            <span syle="font-weight: 700;">The Marina Daily</span> uses 
-                            <span syle="font-weight: 700;">OptiGo</span>.</h1>
+                        
                            <h1 class="text text-body"> Let's get started.
                         </h1>
                     <div style="text-align: center">
