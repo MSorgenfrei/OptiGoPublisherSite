@@ -427,6 +427,79 @@
                 </div>
             </section>
         </main>
+<body>
+    <h2>Firebase Phone Authentication</h2>
+    <input type="text" id="phoneNumber" placeholder="Enter phone number (+1234567890)" />
+    <button onclick="sendOTP()">Send OTP</button>
+    <div id="recaptcha-container"></div>
+    
+    <input type="text" id="otp" placeholder="Enter OTP" />
+    <button onclick="verifyOTP()">Verify OTP</button>
+    
+    <p id="status"></p>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    
+    <script>
+        // Step 1: Add Firebase Config (Replace with your actual config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAbn5wdVquG2or6jA7yBZgqy2lolbmoPLc",
+            authDomain: "optigo-publishing-demo.firebaseapp.com",
+            projectId: "optigo-publishing-demo",
+            storageBucket: "optigo-publishing-demo.appspot.com",
+            messagingSenderId: "330666647467",
+            appId: "1:330666647467:web:44e503b81534ffd87cbcee",
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        function sendOTP() {
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+
+            // Validate phone number format
+            if (!phoneNumber.startsWith('+')) {
+                document.getElementById('status').innerText = 'Please enter a valid phone number with country code (e.g., +15551234567).';
+                return;
+            }
+
+            // Reset & render reCAPTCHA
+            document.getElementById('recaptcha-container').innerHTML = ""; // Clear previous
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                'size': 'invisible',
+                'callback': (response) => {
+                    console.log('Invisible reCAPTCHA resolved');
+                }
+            });
+
+                window.recaptchaVerifier.render();
+
+            const appVerifier = window.recaptchaVerifier;
+            firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+                .then((confirmationResult) => {
+                    window.confirmationResult = confirmationResult;
+                    document.getElementById('status').innerText = 'OTP Sent!';
+                }).catch((error) => {
+                    console.error(error);
+                    document.getElementById('status').innerText = error.message;
+                });
+        }
+
+        function verifyOTP() {
+            const otp = document.getElementById('otp').value;
+            window.confirmationResult.confirm(otp)
+                .then((result) => {
+                    document.getElementById('status').innerText = 'Phone number verified!';
+                    console.log('User:', result.user);
+                }).catch((error) => {
+                    console.error(error);
+                    document.getElementById('status').innerText = 'Invalid OTP. Try again!';
+                });
+        }
+    </script>
+</body>
+</html>
+
         
         <footer>
             <p>&copy; 2025 OptiGo Publishing. All rights reserved.</p>
