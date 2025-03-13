@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
     // Get the current page URL to store per-page access
     const pageKey = `paywallPassed_${window.location.pathname}`;
 
@@ -10,35 +9,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const modalHTML = `
         <div id="paywall-overlay">
             <div id="paywall-modal">
+                <!-- Step 1 -->
                 <div id="paywall-step-1">
                     <h1 class="text text-header">Pay As You Go.</h1>
                     <h2 class="text text-subheader">No subscriptions. No surprises.</h2>
-                    <button class="btn" style="margin: 40px; border-radius: 5px; padding: 10px 20px" id="paywall-continue">Reveal Article $0.49</button>
-                    <p class="text text-small">Powered by <syle="font-weight: 700;">OptiGo.</p>
+                    <button class="btn" id="paywall-continue">Reveal Article $0.49</button>
+                    <p class="text text-small">Powered by <span style="font-weight: 700;">OptiGo.</span></p>
                 </div>
+
+                <!-- Step 2: Phone Authentication -->
                 <div id="paywall-step-2" class="hidden">
                     <h1 class="text text-header2">
-                            <span style="font-weight: 700;">The Marina Daily</span> uses 
-                            <span style="font-weight: 700;">OptiGo</span> for pay as you go access.</h1>
-                    <div style="text-align: center; margin: 30px 5px">
-                        
-                           <h1 class="text text-body"> Let's get started.
-                        </h1>
-                    <div style="text-align: center">
-                        <input type="text" class="input-field text text-body" id="paywall-phone" placeholder="Enter your phone number" required/>
-                    </div>
-                </div>
-                 <button class="btn" id="paywall-phone-btn">Next</button> 
-                 <p class="text text-fineprint" style="margin-top: 10px";>By clicking "Next" you agree to our <a href="#">Terms of Service</a>.</p>
-                </div>
-                <div id="paywall-step-3" class="hidden">
-                    <h1 class="text text-header2">
-                        <span style="font-weight: 700;">Load your wallet</span> for instant access to all OptiGo sites.
+                        <span style="font-weight: 700;">The Marina Daily</span> uses 
+                        <span style="font-weight: 700;">OptiGo</span> for pay as you go access.
                     </h1>
                     <div style="text-align: center; margin: 30px 5px">
-                        <p class="text text-body">Choose Amount.</p> 
-                        <p class="text text-body">Withdraw anytime at <a href="https://msorgenfrei.github.io/OptiGoPublisherSite/">OptiGo.</a></p>
-                        <div class="button-container" style="margin: 10px;">
+                        <h1 class="text text-body"> Let's get started.</h1>
+                        <input type="text" class="input-field text text-body" id="paywall-phone" placeholder="Enter your phone number" required/>
+                        <div id="recaptcha-container"></div>
+                        <button class="btn" id="paywall-phone-btn">Send OTP</button> 
+                    </div>
+                    <input type="text" class="input-field text text-body hidden" id="paywall-otp" placeholder="Enter OTP" />
+                    <button class="btn hidden" id="paywall-verify-btn">Verify OTP</button>
+                    <p id="paywall-status"></p>
+                    <p class="text text-fineprint">By clicking "Next" you agree to our <a href="#">Terms of Service</a>.</p>
+                </div>
+
+                <!-- Step 3: Payment -->
+                <div id="paywall-step-3" class="hidden">
+                    <h1 class="text text-header2"><span style="font-weight: 700;">Load your wallet</span> for instant access.</h1>
+                    <div style="text-align: center; margin: 30px 5px">
+                        <p class="text text-body">Choose Amount.</p>
+                        <div class="button-container">
                             <button class="btn btn-option" data-amount="$2.50">$2.50</button>
                             <button class="btn btn-option" data-amount="$5">$5</button>
                             <button class="btn btn-option" data-amount="$10">$10</button>
@@ -62,43 +64,91 @@ document.addEventListener("DOMContentLoaded", () => {
     const step1 = document.getElementById("paywall-step-1");
     const step2 = document.getElementById("paywall-step-2");
     const step3 = document.getElementById("paywall-step-3");
-    const finishButton = document.getElementById("paywall-submit");
 
-    //Hide step 1 and show step 2 when 1 is done
-    document.getElementById("paywall-continue").addEventListener("click", () => {
+    // Button references
+    const continueBtn = document.getElementById("paywall-continue");
+    const phoneBtn = document.getElementById("paywall-phone-btn");
+    const verifyBtn = document.getElementById("paywall-verify-btn");
+    const statusText = document.getElementById("paywall-status");
+
+    // Step 1 → Step 2
+    continueBtn.addEventListener("click", () => {
         step1.classList.add("hidden");
         step2.classList.remove("hidden");
     });
-    //Hide step 2 and show step 3 when 2 is done
-    document.getElementById("paywall-phone-btn").addEventListener("click", () => {
-        step2.classList.add("hidden");
-        step3.classList.remove("hidden");
+
+    // Initialize Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyAbn5wdVquG2or6jA7yBZgqy2lolbmoPLc",
+        authDomain: "optigo-publishing-demo.firebaseapp.com",
+        projectId: "optigo-publishing-demo",
+        storageBucket: "optigo-publishing-demo.appspot.com",
+        messagingSenderId: "330666647467",
+        appId: "1:330666647467:web:44e503b81534ffd87cbcee",
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // Setup Invisible reCAPTCHA
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        'size': 'invisible',
+        'callback': (response) => {
+            console.log('reCAPTCHA resolved');
+        }
     });
 
-    // Select all the buttons with the class "btn-option"
-    const buttons = document.querySelectorAll('.btn-option');
+    // Step 2: Send OTP
+    phoneBtn.addEventListener("click", () => {
+        const phoneNumber = document.getElementById("paywall-phone").value;
+        const appVerifier = window.recaptchaVerifier;
 
-    // Loop through each button and add an event listener for clicks
+        firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+            .then((confirmationResult) => {
+                window.confirmationResult = confirmationResult;
+                statusText.innerText = "OTP Sent!";
+                document.getElementById("paywall-otp").classList.remove("hidden");
+                verifyBtn.classList.remove("hidden");
+                phoneBtn.classList.add("hidden"); // Hide send OTP button
+            })
+            .catch((error) => {
+                console.error(error);
+                statusText.innerText = error.message;
+            });
+    });
+
+    // Step 2: Verify OTP
+    verifyBtn.addEventListener("click", () => {
+        const otp = document.getElementById("paywall-otp").value;
+        window.confirmationResult.confirm(otp)
+            .then((result) => {
+                statusText.innerText = "Phone number verified!";
+                console.log("User:", result.user);
+                step2.classList.add("hidden");
+                step3.classList.remove("hidden");
+            })
+            .catch((error) => {
+                console.error(error);
+                statusText.innerText = "Invalid OTP. Try again!";
+            });
+    });
+
+    // Select all payment buttons
+    const buttons = document.querySelectorAll('.btn-option');
     buttons.forEach(button => {
         button.addEventListener('click', function() {
-            // Remove the 'active' class from all buttons
             buttons.forEach(btn => btn.classList.remove('active'));
-        
-        // Add the 'active' class to the clicked button
-        button.classList.add('active');
-    });
-});
-
-      // Remove paywall on "Finish" and grant access to the page
-      finishButton.addEventListener("click", () => {
-        sessionStorage.setItem(pageKey, "true"); // Store session access for this page
-        overlay.remove(); // Remove paywall from page
+            button.classList.add('active');
+        });
     });
 
+    // Step 3: Remove paywall & grant access
+    document.getElementById("paywall-submit").addEventListener("click", () => {
+        sessionStorage.setItem(pageKey, "true");
+        overlay.remove();
+    });
+
+    // Show the paywall
     setTimeout(() => {
-        overlay.style.display = "flex";  // Show the overlay
+        overlay.style.display = "flex";
         overlay.style.backdropFilter = "blur(5px)";
-    }, 1500);  // Delay in milliseconds (2000ms = 2 seconds)
-    
-
+    }, 1500);
 });
