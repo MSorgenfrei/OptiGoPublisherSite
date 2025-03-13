@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <h1 class="text text-header2">
                             <span style="font-weight: 700;">The Marina Daily</span> uses 
                             <span style="font-weight: 700;">OptiGo</span> for pay as you go access.</h1>
-                 <div style="text-align: center; margin: 30px 5px">
+                    <div style="text-align: center; margin: 30px 5px">
                         
                            <h1 class="text text-body"> Let's get started.
                         </h1>
