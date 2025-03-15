@@ -28,10 +28,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         <input type="text" class="input-field text text-body" id="paywall-phone" placeholder="+155501234" required/>
                         <div id="recaptcha-container"></div>
                         <button class="btn" id="paywall-phone-btn">Send Code</button> 
-                    </div>
-                    <input type="text" class="input-field text text-body hidden" id="paywall-otp" placeholder="Enter Code" />
+                   
+                        <input type="text" class="input-field text text-body hidden" id="paywall-otp" placeholder="Enter Code" />
+                        <p id="paywall-status"></p>
+                     </div>
                     <button class="btn hidden" id="paywall-verify-btn">Verify</button>
-                    <p id="paywall-status"></p>
+                    
                     <p class="text text-fineprint">By clicking "Verify" you agree to our <a href="#">Terms of Service</a>.</p>
                 </div>
 
@@ -116,8 +118,8 @@ document.addEventListener("DOMContentLoaded", () => {
         firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
             .then((confirmationResult) => {
                 window.confirmationResult = confirmationResult;
-                statusText.innerText = "Code Sent!"; // Message that shows up
-                statusText.style = "text text-fineprint";
+                statusText.innerText = "Code sent!"; // Message that shows up
+                statusText.className = "text text-body"; // CHow to update style
                 document.getElementById("paywall-otp").classList.remove("hidden");
                 verifyBtn.classList.remove("hidden");
                 phoneBtn.classList.add("hidden"); // Hide send OTP button
