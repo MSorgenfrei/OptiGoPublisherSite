@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div id="paywall-step-1">
                     <h1 class="text text-header">Pay As You Go.</h1>
                     <h2 class="text text-subheader">No subscriptions. No surprises.</h2>
-                    <button class="btn" id="paywall-continue">Reveal Article $0.49</button>
+                    <button class="btn" style="margin: 40px; border-radius: 5px; padding: 10px 20px" id="paywall-continue">Reveal Article $0.49</button>
                     <p class="text text-small">Powered by <span style="font-weight: 700;">OptiGo.</span></p>
                 </div>
 
@@ -24,15 +24,15 @@ document.addEventListener("DOMContentLoaded", () => {
                         <span style="font-weight: 700;">OptiGo</span> for pay as you go access.
                     </h1>
                     <div style="text-align: center; margin: 30px 5px">
-                        <h1 class="text text-body"> Let's get started.</h1>
-                        <input type="text" class="input-field text text-body" id="paywall-phone" placeholder="Enter your phone number" required/>
+                        <h1 class="text text-body">Enter your phone number.</h1>
+                        <input type="text" class="input-field text text-body" id="paywall-phone" placeholder="+155501234" required/>
                         <div id="recaptcha-container"></div>
-                        <button class="btn" id="paywall-phone-btn">Send OTP</button> 
+                        <button class="btn" id="paywall-phone-btn">Send Code</button> 
                     </div>
-                    <input type="text" class="input-field text text-body hidden" id="paywall-otp" placeholder="Enter OTP" />
-                    <button class="btn hidden" id="paywall-verify-btn">Verify OTP</button>
+                    <input type="text" class="input-field text text-body hidden" id="paywall-otp" placeholder="Enter Code" />
+                    <button class="btn hidden" id="paywall-verify-btn">Verify</button>
                     <p id="paywall-status"></p>
-                    <p class="text text-fineprint">By clicking "Next" you agree to our <a href="#">Terms of Service</a>.</p>
+                    <p class="text text-fineprint">By clicking "Verify" you agree to our <a href="#">Terms of Service</a>.</p>
                 </div>
 
                 <!-- Step 3: Payment -->
@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Step 2: Send OTP
+    // Step 2: Send Code
     phoneBtn.addEventListener("click", () => {
         const phoneNumber = document.getElementById("paywall-phone").value;
         const appVerifier = window.recaptchaVerifier;
@@ -104,7 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
         firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
             .then((confirmationResult) => {
                 window.confirmationResult = confirmationResult;
-                statusText.innerText = "OTP Sent!";
+                statusText.innerText = "Code Sent!"; // Message that shows up
+                statusText.style = "text text-fineprint";
                 document.getElementById("paywall-otp").classList.remove("hidden");
                 verifyBtn.classList.remove("hidden");
                 phoneBtn.classList.add("hidden"); // Hide send OTP button
@@ -127,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch((error) => {
                 console.error(error);
-                statusText.innerText = "Invalid OTP. Try again!";
+                statusText.innerText = "Invalid Code. Try again!";
             });
     });
 
