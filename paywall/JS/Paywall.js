@@ -60,6 +60,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 
+    // Select all payment buttons and enable single selection behavior
+    const buttons = document.querySelectorAll('.btn-option');
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            buttons.forEach(btn => btn.classList.remove('active')); // Remove active class from all buttons
+            button.classList.add('active'); // Add active class to clicked button
+        });
+    });
+
     const overlay = document.getElementById("paywall-overlay");
     const step1 = document.getElementById("paywall-step-1");
     const step2 = document.getElementById("paywall-step-2");
@@ -71,7 +80,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const verifyBtn = document.getElementById("paywall-verify-btn");
     const statusText = document.getElementById("paywall-status");
 
-    // Step 1 → Step 2
+    //Check if the user has already completed the paywall
+    const paywallFullyCompleted = sessionStorage.getItem("paywallFullyCompleted");
+
+    // Hide steps until last one completed
     continueBtn.addEventListener("click", () => {
         step1.classList.add("hidden");
         step2.classList.remove("hidden");
@@ -96,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Step 2: Send Code
+    // Phone Auth: Send Code
     phoneBtn.addEventListener("click", () => {
         const phoneNumber = document.getElementById("paywall-phone").value;
         const appVerifier = window.recaptchaVerifier;
@@ -116,15 +128,22 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     });
 
-    // Step 2: Verify OTP
+    // Phone Auth: Verify OTP
     verifyBtn.addEventListener("click", () => {
         const otp = document.getElementById("paywall-otp").value;
         window.confirmationResult.confirm(otp)
             .then((result) => {
                 statusText.innerText = "Phone number verified!";
                 console.log("User:", result.user);
-                step2.classList.add("hidden");
-                step3.classList.remove("hidden");
+    
+                // If the user has completed the full paywall before, skip Step 3
+                if (paywallFullyCompleted) {
+                    sessionStorage.setItem(pageKey, "true"); // Grant access
+                    overlay.remove();
+                } else {
+                    step2.classList.add("hidden");
+                    step3.classList.remove("hidden");
+                }
             })
             .catch((error) => {
                 console.error(error);
@@ -132,18 +151,10 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     });
 
-    // Select all payment buttons
-    const buttons = document.querySelectorAll('.btn-option');
-    buttons.forEach(button => {
-        button.addEventListener('click', function() {
-            buttons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-        });
-    });
-
-    // Step 3: Remove paywall & grant access
+    // Remove paywall & grant access
     document.getElementById("paywall-submit").addEventListener("click", () => {
-        sessionStorage.setItem(pageKey, "true");
+        sessionStorage.setItem(pageKey, "true"); // Grant access to current page
+        sessionStorage.setItem("paywallFullyCompleted", "true"); // Mark full completion
         overlay.remove();
     });
 
