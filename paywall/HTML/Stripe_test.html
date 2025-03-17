@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Checkout</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+
+    <h2>Select an Amount</h2>
+    <button onclick="redirectToCheckout('price_1R3SsrAxHGHXGLCj9DvF4cCc')">Pay $2.50</button>
+    <button onclick="redirectToCheckout('price_1R3StuAxHGHXGLCj0zgisAJv')">Pay $5.00</button>
+    <button onclick="redirectToCheckout('price_1R3SubAxHGHXGLCj82jflcUO')">Pay $10.00</button>
+
+    <script>
+        async function redirectToCheckout(priceId) {
+            const response = await fetch("http://localhost:3000/create-checkout-session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ priceId })
+            });
+            const { url } = await response.json();
+            window.location.href = url; // Redirect user
+        }
+    </script>
+    
+
+</body>
+</html>
