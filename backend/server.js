@@ -1,12 +1,12 @@
-require("dotenv").config(); // Ensure you add this line at the top of your server.js
+require("dotenv").config(); 
 const express = require("express");
 const cors = require("cors");
 const Stripe = require("stripe");
 
 const app = express();
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Make sure you're using the key from the .env file
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY); 
 
-app.use(cors({ origin: "*" })); // Allows all domains (for testing)
+app.use(cors({ origin: "https://msorgenfrei.github.io" })); // Allow only your frontend domain
 app.use(express.json());
 
 // Create a Stripe Checkout Session
@@ -18,14 +18,17 @@ app.post("/create-checkout-session", async (req, res) => {
             payment_method_types: ["card"],
             line_items: [{ price: priceId, quantity: 1 }],
             mode: "payment",
-            success_url: "https://msorgenfrei.github.io/OptiGoPublisherSite/",
-            cancel_url: "https://yourwebsite.com/cancel",
+            success_url: "https://msorgenfrei.github.io/OptiGoPublisherSite/", // Update to your actual frontend
+            cancel_url: "https://msorgenfrei.github.io/OptiGoPublisherSite/cancel",
         });
 
-        res.json({ url: session.url }); // Send URL back to frontend
+        res.json({ url: session.url });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-app.listen(3000, () => console.log("Backend running on http://localhost:3000"));
+// Use the correct port for Render
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+

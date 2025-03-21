@@ -16,16 +16,22 @@
 
     <script>
         async function redirectToCheckout(priceId) {
-            const response = await fetch("http://localhost:3000/create-checkout-session", {
+            const response = await fetch("https://optigo-paywall-backend.onrender.com/create-checkout-session", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ priceId })
             });
-            const { url } = await response.json();
-            window.location.href = url; // Redirect user
+    
+            const data = await response.json();
+    
+            if (data.url) {
+                window.location.href = data.url; // Redirect user to Stripe Checkout
+            } else {
+                console.error("Error creating checkout session:", data.error);
+                alert("Failed to create checkout session. Please try again.");
+            }
         }
     </script>
-    
 
 </body>
 </html>
