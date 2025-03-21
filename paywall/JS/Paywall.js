@@ -43,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div style="text-align: center; margin: 30px 5px">
                         <p class="text text-body">Choose Amount.</p>
                         <div class="button-container">
-                           <div class="button-container">
                             <button class="btn btn-option" data-price-id="price_1R3SsrAxHGHXGLCj9DvF4cCc">$2.50</button>
                             <button class="btn btn-option" data-price-id="price_1R3StuAxHGHXGLCj0zgisAJv">$5</button>
                             <button class="btn btn-option" data-price-id="price_1R3SubAxHGHXGLCj82jflcUO">$10</button>
@@ -120,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((confirmationResult) => {
                 window.confirmationResult = confirmationResult;
                 statusText.innerText = "Code sent!"; // Message that shows up
-                statusText.className = "text text-body"; // How to update style
+                statusText.className = "text text-body"; // CHow to update style
                 document.getElementById("paywall-otp").classList.remove("hidden");
                 verifyBtn.classList.remove("hidden");
                 phoneBtn.classList.add("hidden"); // Hide send OTP button
