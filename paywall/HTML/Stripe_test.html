@@ -1,37 +1,23 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stripe Checkout</title>
+    <title>Paywall Test</title>
     <script src="https://js.stripe.com/v3/"></script>
+    <script defer src="../JS/Paywall.js"></script> 
+    <link rel="stylesheet" href="../CSS/paywall.css">
 </head>
 <body>
-
-    <h2>Select an Amount</h2>
-    <button onclick="redirectToCheckout('price_1R3SsrAxHGHXGLCj9DvF4cCc')">Pay $2.50</button>
-    <button onclick="redirectToCheckout('price_1R3StuAxHGHXGLCj0zgisAJv')">Pay $5.00</button>
-    <button onclick="redirectToCheckout('price_1R3SubAxHGHXGLCj82jflcUO')">Pay $10.00</button>
+    <h1>Test Paywall Integration</h1>
+    <p>Click below to trigger the paywall modal:</p>
+    <button id="show-paywall">Open Paywall</button>
 
     <script>
-        async function redirectToCheckout(priceId) {
-            const response = await fetch("https://optigo-paywall-backend.onrender.com/create-checkout-session", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ priceId })
-            });
-    
-            const data = await response.json();
-    
-            if (data.url) {
-                window.location.href = data.url; // Redirect user to Stripe Checkout
-            } else {
-                console.error("Error creating checkout session:", data.error);
-                alert("Failed to create checkout session. Please try again.");
-            }
-        }
+        document.getElementById("show-paywall").addEventListener("click", () => {
+            document.getElementById("paywall-overlay").style.display = "flex";
+        });
     </script>
-
 </body>
 </html>
+
