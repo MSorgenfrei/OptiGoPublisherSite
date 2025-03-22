@@ -428,7 +428,7 @@
     <link rel="stylesheet" href="../css/paywall.css">
 
     <!-- Script -->
-    <script src="../js/old_paywall_code.js"></script>
+    <script src="../js/Paywall.js"></script>
 
     <!-- Phone Auth -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
@@ -444,7 +444,7 @@
 
     <script>
         async function redirectToCheckout(priceId) {
-            const response = await fetch("https://optigo-paywall-backend.onrender.com", {
+            const response = await fetch("https://localhost:3000", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ priceId })

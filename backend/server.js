@@ -6,7 +6,16 @@ const Stripe = require("stripe");
 const app = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY); 
 
-app.use(cors({ origin: "https://msorgenfrei.github.io" })); // Allow only your frontend domain
+// CORS configuration
+
+app.use(cors({
+    origin: [
+        "https://msorgenfrei.github.io",  // Production domain
+        "http://127.0.0.1:5500",          // Local development domain
+        "http://localhost:5500"            // Local development domain (alternative)
+    ]
+}));
+
 app.use(express.json());
 
 // Create a Stripe Checkout Session
