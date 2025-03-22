@@ -153,12 +153,50 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     });
 
-    // Remove paywall & grant access
-    document.getElementById("paywall-submit").addEventListener("click", () => {
-        sessionStorage.setItem(pageKey, "true"); // Grant access to current page
-        sessionStorage.setItem("paywallFullyCompleted", "true"); // Mark full completion
-        overlay.remove();
+    // Stripe Payment
+    document.getElementById("paywall-submit").addEventListener("click", async () => {
+        const selectedButton = document.querySelector(".btn-option.active");
+        if (!selectedButton) {
+            alert("Please select an amount.");
+            return;
+        }
+    
+        const priceId = selectedButton.getAttribute("data-price-id");
+    
+        if (!priceId) {
+            alert("Invalid price ID selected.");
+            return;
+        }
+    
+        try {
+            const response = await fetch("https://optigo-paywall-backend.onrender.com/create-checkout-session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ priceId })
+            });
+    
+            const data = await response.json();
+    
+            if (data.url) {
+                // Redirect user to Stripe Checkout
+                window.location.href = data.url; 
+    
+                // Only remove the modal after a successful checkout session and user redirection
+                sessionStorage.setItem(pageKey, "true"); // Grant access to current page
+                sessionStorage.setItem("paywallFullyCompleted", "true"); // Mark full completion
+                setTimeout(() => {
+                    overlay.remove(); // Remove the modal after redirection
+                }, 1000); // Small delay to ensure redirection happens first
+            } else {
+                console.error("Error creating checkout session:", data.error);
+                alert("Failed to create checkout session. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred. Please try again.");
+        }
     });
+    
 
     // Show the paywall
     setTimeout(() => {

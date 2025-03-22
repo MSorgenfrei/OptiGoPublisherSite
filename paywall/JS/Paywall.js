@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Get the current page URL to store per-page access
     const pageKey = `paywallPassed_${window.location.pathname}`;
+    const paymentSuccess = localStorage.getItem("payment_success") === "true";
 
-    // Only run the paywall if the user hasn't completed it for this page
+    // If user has already passed the paywall on this page, exit
     if (sessionStorage.getItem(pageKey)) return;
 
     // Create modal HTML
@@ -153,52 +153,40 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     });
 
-    // Stripe Payment
+    // Stripe Checkout
     document.getElementById("paywall-submit").addEventListener("click", async () => {
         const selectedButton = document.querySelector(".btn-option.active");
         if (!selectedButton) {
             alert("Please select an amount.");
             return;
         }
-    
+
         const priceId = selectedButton.getAttribute("data-price-id");
-    
-        if (!priceId) {
-            alert("Invalid price ID selected.");
-            return;
-        }
-    
+        const currentPage = window.location.href; // Get current page URL
+
         try {
             const response = await fetch("https://optigo-paywall-backend.onrender.com/create-checkout-session", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ priceId })
+                body: JSON.stringify({ priceId, returnUrl: currentPage }) // Send return URL
             });
-    
+
             const data = await response.json();
-    
+
             if (data.url) {
-                // Redirect user to Stripe Checkout
-                window.location.href = data.url; 
-    
-                // Only remove the modal after a successful checkout session and user redirection
-                sessionStorage.setItem(pageKey, "true"); // Grant access to current page
-                sessionStorage.setItem("paywallFullyCompleted", "true"); // Mark full completion
-                setTimeout(() => {
-                    overlay.remove(); // Remove the modal after redirection
-                }, 1000); // Small delay to ensure redirection happens first
+                localStorage.setItem("payment_success", "true"); // Mark payment success
+                window.location.href = data.url;
             } else {
-                console.error("Error creating checkout session:", data.error);
-                alert("Failed to create checkout session. Please try again.");
+                console.error("Error:", data.error);
+                alert("Checkout failed.");
             }
         } catch (error) {
             console.error("Error:", error);
             alert("An error occurred. Please try again.");
         }
     });
-    
 
-    // Show the paywall
+    // Show paywall
     setTimeout(() => {
         overlay.style.display = "flex";
         overlay.style.backdropFilter = "blur(5px)";
