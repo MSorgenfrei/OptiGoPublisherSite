@@ -164,11 +164,26 @@ document.addEventListener("DOMContentLoaded", () => {
         const priceId = selectedButton.getAttribute("data-price-id");
         const currentPage = window.location.href; // Get current page URL
 
+        // Send the POST request to create the checkout session
+        const response = await fetch("https://optigo-paywall-backend.onrender.com/create-checkout-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                priceId,
+                successUrl: currentPage + "?payment_success=true",  // Pass success URL with query param
+                cancelUrl: currentPage + "?payment_cancelled=true" // Pass cancel URL with query param
+            })
+        });
+
         try {
             const response = await fetch("https://optigo-paywall-backend.onrender.com/create-checkout-session", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ priceId, returnUrl: currentPage }) // Send return URL
+                body: JSON.stringify({
+                    priceId,
+                    success_url: window.location.href + "?payment_success=true",
+                    cancel_url: window.location.href + "?payment_cancelled=true"
+                })
             });
 
             const data = await response.json();
