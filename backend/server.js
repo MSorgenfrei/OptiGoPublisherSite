@@ -21,16 +21,18 @@ app.use(express.json());
 // Create a Stripe Checkout Session
 app.post("/create-checkout-session", async (req, res) => {
     try {
-        const { priceId, successUrl } = req.body; // Get success URL from frontend
+        const { priceId, successUrl, cancelUrl } = req.body; // Get both success and cancel URLs from the frontend
 
+        // Create the Stripe checkout session
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             line_items: [{ price: priceId, quantity: 1 }],
             mode: "payment",
-            success_url: `${successUrl}?payment_success=true`, // Redirect back to original page
-            cancel_url: successUrl, // Stay on the same page if canceled
+            success_url: `${successUrl}`, // Correct usage of the success URL
+            cancel_url: `${cancelUrl}`,   // Correct usage of the cancel URL
         });
 
+        // Respond with the session URL
         res.json({ url: session.url });
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -41,3 +43,5 @@ app.post("/create-checkout-session", async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
 
+const data = await response.json();
+console.log("Backend response:", data); // Add this line for debugging
