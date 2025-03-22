@@ -1,13 +1,12 @@
-require("dotenv").config(); 
-const express = require("express");
-const cors = require("cors");
-const Stripe = require("stripe");
+import "dotenv/config"; // Use import if type is "module"
+import express from "express";
+import cors from "cors";
+import Stripe from "stripe";
 
 const app = express();
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY); 
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 // CORS configuration
-
 app.use(cors({
     origin: [
         "https://msorgenfrei.github.io",  // Production domain
@@ -28,8 +27,8 @@ app.post("/create-checkout-session", async (req, res) => {
             payment_method_types: ["card"],
             line_items: [{ price: priceId, quantity: 1 }],
             mode: "payment",
-            success_url: `${successUrl}`, // Correct usage of the success URL
-            cancel_url: `${cancelUrl}`,   // Correct usage of the cancel URL
+            success_url: successUrl, // Success URL
+            cancel_url: cancelUrl,   // Cancel URL
         });
 
         // Respond with the session URL
@@ -42,6 +41,3 @@ app.post("/create-checkout-session", async (req, res) => {
 // Use the correct port for Render
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
-
-const data = await response.json();
-console.log("Backend response:", data); // Add this line for debugging
