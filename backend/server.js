@@ -2,7 +2,7 @@ import "dotenv/config"; // Use import if type is "module"
 import express from "express";
 import cors from "cors";
 import Stripe from "stripe";
-import pkg from 'pg';  // Import the entire pg package
+import pkg from 'pg';  // Correct import for 'pg'
 const { Client } = pkg;  // Destructure Client from the imported package
 
 const app = express();
@@ -22,15 +22,15 @@ app.use(express.json());
 // Create a Stripe Checkout Session
 app.post("/create-checkout-session", async (req, res) => {
     try {
-        const { priceId, successUrl, cancelUrl } = req.body; // Get both success and cancel URLs from the frontend
+        const { priceId, successUrl, cancelUrl } = req.body;
 
         // Create the Stripe checkout session
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             line_items: [{ price: priceId, quantity: 1 }],
             mode: "payment",
-            success_url: successUrl, // Success URL
-            cancel_url: cancelUrl,   // Cancel URL
+            success_url: successUrl,
+            cancel_url: cancelUrl,
         });
 
         // Respond with the session URL
@@ -42,9 +42,9 @@ app.post("/create-checkout-session", async (req, res) => {
 
 // Set up PostgreSQL connection using environment variables
 const client = new Client({
-  connectionString: process.env.DATABASE_URL,  // Correct environment variable name
+  connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false, // Required for Render's SSL connection
+    rejectUnauthorized: false,  // Required for Render's SSL connection
   },
 });
 
@@ -73,25 +73,6 @@ client
   .query(createTableQuery)
   .then(() => console.log("Users table created"))
   .catch((err) => console.error("Error creating table:", err));
-
-// Test Route to insert a user
-app.get('/test', async (req, res) => {
-  try {
-    // Sample SQL Query to insert data into the database
-    const result = await client.query(
-      `INSERT INTO users (firebase_uid, phone_number, name, email) 
-      VALUES ($1, $2, $3, $4) RETURNING *`,
-      ['test-firebase-uid', '1234567890', 'John Doe', 'john.doe@example.com']
-    );
-
-    res.json({
-      message: 'User inserted successfully!',
-      user: result.rows[0], // Returning the inserted user data
-    });
-  } catch (err) {
-    res.status(500).json({ error: 'Error inserting user', details: err });
-  }
-});
 
 // Start the server
 const PORT = process.env.PORT || 3000;
