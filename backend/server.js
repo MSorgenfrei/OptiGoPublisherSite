@@ -2,6 +2,7 @@ import "dotenv/config"; // Use import if type is "module"
 import express from "express";
 import cors from "cors";
 import Stripe from "stripe";
+import { Client } from "pg";  // Correct placement of import statement
 
 const app = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
@@ -38,6 +39,61 @@ app.post("/create-checkout-session", async (req, res) => {
     }
 });
 
-// Use the correct port for Render
+// Set up PostgreSQL connection using environment variables
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,  // Correct environment variable name
+  ssl: {
+    rejectUnauthorized: false, // Required for Render's SSL connection
+  },
+});
+
+// Connect to the database
+client.connect()
+  .then(() => {
+    console.log('Connected to the database!');
+  })
+  .catch(err => {
+    console.error('Error connecting to the database:', err.stack);
+  });
+
+// SQL to create a new users table
+const createTableQuery = `
+  CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    firebase_uid VARCHAR(255) UNIQUE NOT NULL,
+    phone_number VARCHAR(15),
+    name VARCHAR(255),
+    email VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`;
+
+client
+  .query(createTableQuery)
+  .then(() => console.log("Users table created"))
+  .catch((err) => console.error("Error creating table:", err));
+
+// Test Route to insert a user
+app.get('/test', async (req, res) => {
+  try {
+    // Sample SQL Query to insert data into the database
+    const result = await client.query(
+      `INSERT INTO users (firebase_uid, phone_number, name, email) 
+      VALUES ($1, $2, $3, $4) RETURNING *`,
+      ['test-firebase-uid', '1234567890', 'John Doe', 'john.doe@example.com']
+    );
+
+    res.json({
+      message: 'User inserted successfully!',
+      user: result.rows[0], // Returning the inserted user data
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Error inserting user', details: err });
+  }
+});
+
+// Start the server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
