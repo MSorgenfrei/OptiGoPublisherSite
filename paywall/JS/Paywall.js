@@ -125,25 +125,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Phone Auth: Verify OTP
-    verifyBtn.addEventListener("click", () => {
+    verifyBtn.addEventListener("click", async () => {
         const otp = document.getElementById("paywall-otp").value;
-        console.log("Attempting to confirm OTP:", otp);
     
         window.confirmationResult.confirm(otp)
             .then((result) => {
-                console.log("OTP confirmed. User:", result.user);
+                statusText.innerText = "Phone number verified!";
+                console.log("User:", result.user);
     
+                // Extract the Firebase UID and phone number
                 const firebaseUid = result.user.uid;
-                console.log("Firebase UID:", firebaseUid);
+                const phoneNumber = result.user.phoneNumber; // Firebase provides the phone number
     
-                // Send only the UID to your backend
+                // Send the UID and phone number to your backend
                 fetch('https://optigo-paywall-backend.onrender.com/add-user', { 
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        firebase_uid: firebaseUid, // Send only the UID
+                        firebase_uid: firebaseUid,
+                        phone_number: phoneNumber, // Now sending the phone number
                     }),
                 })
                 .then(response => response.json())
@@ -153,11 +155,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     step3.classList.remove("hidden");
                 })
                 .catch(error => {
-                    console.error("Error sending UID to backend:", error);
+                    console.error("Error sending user data to backend:", error);
                 });
+    
             })
             .catch((error) => {
-                console.error("Error confirming OTP:", error);
+                console.error(error);
                 statusText.innerText = "Invalid Code. Try again!";
             });
     });
