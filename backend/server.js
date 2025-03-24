@@ -2,7 +2,8 @@ import "dotenv/config"; // Use import if type is "module"
 import express from "express";
 import cors from "cors";
 import Stripe from "stripe";
-import { Client } from "pg";  // Correct placement of import statement
+import pkg from 'pg';  // Import the entire pg package
+const { Client } = pkg;  // Destructure Client from the imported package
 
 const app = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
