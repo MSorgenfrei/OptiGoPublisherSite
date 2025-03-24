@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((confirmationResult) => {
                 window.confirmationResult = confirmationResult;
                 statusText.innerText = "Code sent!"; // Message that shows up
-                statusText.className = "text text-body"; // CHow to update style
+                statusText.className = "text text-body"; // How to update style
                 document.getElementById("paywall-otp").classList.remove("hidden");
                 verifyBtn.classList.remove("hidden");
                 phoneBtn.classList.add("hidden"); // Hide send OTP button
@@ -131,10 +131,32 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((result) => {
                 statusText.innerText = "Phone number verified!";
                 console.log("User:", result.user);
-    
-                // Move from Step 2 to Step 3
-                step2.classList.add("hidden");
-                step3.classList.remove("hidden");
+
+                // Extract the Firebase UID
+                const firebaseUid = result.user.uid;
+
+                // Send the UID and other user data to your backend
+                fetch('https://optigo-paywall-backend.onrender.com', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        firebase_uid: firebaseUid,
+                        phone_number: phoneNumber, // Send the phone number too
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("User added:", data);
+                    // Move from Step 2 to Step 3
+                    step2.classList.add("hidden");
+                    step3.classList.remove("hidden");
+                })
+                .catch(error => {
+                    console.error("Error sending user data to backend:", error);
+                });
+
             })
             .catch((error) => {
                 console.error(error);
