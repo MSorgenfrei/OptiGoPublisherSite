@@ -2,9 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const pageKey = `paywallPassed_${window.location.pathname}`;
     const paymentSuccess = localStorage.getItem("payment_success") === "true";
 
-    // If user has already passed the paywall on this page, exit
-    if (sessionStorage.getItem(pageKey)) return;
-
     // Create modal HTML
     const modalHTML = `
         <div id="paywall-overlay">
@@ -82,9 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const verifyBtn = document.getElementById("paywall-verify-btn");
     const statusText = document.getElementById("paywall-status");
 
-    //Check if the user has already completed the paywall
-    const paywallFullyCompleted = sessionStorage.getItem("paywallFullyCompleted");
-
     // Hide steps until last one completed
     continueBtn.addEventListener("click", () => {
         step1.classList.add("hidden");
@@ -138,14 +132,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 statusText.innerText = "Phone number verified!";
                 console.log("User:", result.user);
     
-                // If the user has completed the full paywall before, skip Step 3
-                if (paywallFullyCompleted) {
-                    sessionStorage.setItem(pageKey, "true"); // Grant access
-                    overlay.remove();
-                } else {
-                    step2.classList.add("hidden");
-                    step3.classList.remove("hidden");
-                }
+                // Move from Step 2 to Step 3
+                step2.classList.add("hidden");
+                step3.classList.remove("hidden");
             })
             .catch((error) => {
                 console.error(error);
@@ -154,22 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Stripe Checkout
-// Check if the user already made a successful payment
-window.addEventListener('load', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentSuccess = urlParams.get('payment_success');
-
-    if (paymentSuccess) {
-        // If the payment was successful, hide the paywall
-        localStorage.setItem("payment_success", "true"); // Store success flag in localStorage
-    }
-
-    // Skip the paywall if the user has already paid
-    if (localStorage.getItem("payment_success") === "true") {
-        document.getElementById("paywall").style.display = "none"; // Hide the paywall
-    }
-    });
-
     document.getElementById("paywall-submit").addEventListener("click", async () => {
     const selectedButton = document.querySelector(".btn-option.active");
     if (!selectedButton) {
@@ -207,8 +180,6 @@ window.addEventListener('load', () => {
         alert("An error occurred. Please try again.");
     }
 });
-
-    
 
     // Show paywall
     setTimeout(() => {

@@ -1,9 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Get the current page URL to store per-page access
     const pageKey = `paywallPassed_${window.location.pathname}`;
-
-    // Only run the paywall if the user hasn't completed it for this page
-    if (sessionStorage.getItem(pageKey)) return;
+    const paymentSuccess = localStorage.getItem("payment_success") === "true";
 
     // Create modal HTML
     const modalHTML = `
@@ -82,9 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const verifyBtn = document.getElementById("paywall-verify-btn");
     const statusText = document.getElementById("paywall-status");
 
-    //Check if the user has already completed the paywall
-    const paywallFullyCompleted = sessionStorage.getItem("paywallFullyCompleted");
-
     // Hide steps until last one completed
     continueBtn.addEventListener("click", () => {
         step1.classList.add("hidden");
@@ -138,14 +132,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 statusText.innerText = "Phone number verified!";
                 console.log("User:", result.user);
     
-                // If the user has completed the full paywall before, skip Step 3
-                if (paywallFullyCompleted) {
-                    sessionStorage.setItem(pageKey, "true"); // Grant access
-                    overlay.remove();
-                } else {
-                    step2.classList.add("hidden");
-                    step3.classList.remove("hidden");
-                }
+                // Move from Step 2 to Step 3
+                step2.classList.add("hidden");
+                step3.classList.remove("hidden");
             })
             .catch((error) => {
                 console.error(error);
@@ -153,52 +142,46 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     });
 
-    // Stripe Payment
+    // Stripe Checkout
     document.getElementById("paywall-submit").addEventListener("click", async () => {
-        const selectedButton = document.querySelector(".btn-option.active");
-        if (!selectedButton) {
-            alert("Please select an amount.");
-            return;
-        }
-    
-        const priceId = selectedButton.getAttribute("data-price-id");
-    
-        if (!priceId) {
-            alert("Invalid price ID selected.");
-            return;
-        }
-    
-        try {
-            const response = await fetch("https://optigo-paywall-backend.onrender.com/create-checkout-session", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ priceId })
-            });
-    
-            const data = await response.json();
-    
-            if (data.url) {
-                // Redirect user to Stripe Checkout
-                window.location.href = data.url; 
-    
-                // Only remove the modal after a successful checkout session and user redirection
-                sessionStorage.setItem(pageKey, "true"); // Grant access to current page
-                sessionStorage.setItem("paywallFullyCompleted", "true"); // Mark full completion
-                setTimeout(() => {
-                    overlay.remove(); // Remove the modal after redirection
-                }, 1000); // Small delay to ensure redirection happens first
-            } else {
-                console.error("Error creating checkout session:", data.error);
-                alert("Failed to create checkout session. Please try again.");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("An error occurred. Please try again.");
-        }
-    });
-    
+    const selectedButton = document.querySelector(".btn-option.active");
+    if (!selectedButton) {
+        alert("Please select an amount.");
+        return;
+    }
 
-    // Show the paywall
+    const priceId = selectedButton.getAttribute("data-price-id");
+    const currentPage = window.location.href; // Get the current page URL dynamically
+    const successUrl = `${currentPage}?payment_success=true`; // Add query params for success
+    const cancelUrl = `${currentPage}?payment_cancelled=true`; // Add query params for cancel
+
+    try {
+        const response = await fetch("https://optigo-paywall-backend.onrender.com/create-checkout-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                priceId,
+                successUrl, // Send dynamic success URL
+                cancelUrl   // Send dynamic cancel URL
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.url) {
+            // Redirect to Stripe checkout
+            window.location.href = data.url;
+        } else {
+            console.error("Error:", data.error);
+            alert("Checkout failed.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("An error occurred. Please try again.");
+    }
+});
+
+    // Show paywall
     setTimeout(() => {
         overlay.style.display = "flex";
         overlay.style.backdropFilter = "blur(5px)";
