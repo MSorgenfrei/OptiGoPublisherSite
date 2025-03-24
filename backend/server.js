@@ -74,7 +74,22 @@ client
   .then(() => console.log("Users table created"))
   .catch((err) => console.error("Error creating table:", err));
 
-// Start the server
+// Route to get all users
+app.get('/users', async (req, res) => {
+    try {
+      // Query to select all users
+      const result = await client.query('SELECT * FROM users');
+  
+      // Respond with the users data
+      res.json(result.rows);
+    } catch (err) {
+      console.error('Error fetching users:', err.stack);
+      res.status(500).json({ error: 'Error fetching users', details: err });
+    }
+  });
+  
+
+  // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
