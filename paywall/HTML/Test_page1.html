@@ -436,24 +436,7 @@
     
     <!-- Stripe script-->
     <script src="https://js.stripe.com/v3/"></script>
-    
-    <h2>Select an Amount</h2>
-    <button onclick="redirectToCheckout('price_1R3SsrAxHGHXGLCj9DvF4cCc')">Pay $2.50</button>
-    <button onclick="redirectToCheckout('price_1R3StuAxHGHXGLCj0zgisAJv')">Pay $5.00</button>
-    <button onclick="redirectToCheckout('price_1R3SubAxHGHXGLCj82jflcUO')">Pay $10.00</button>
 
-    <script>
-        async function redirectToCheckout(priceId) {
-            const response = await fetch("https://localhost:3000", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ priceId })
-            });
-            const { url } = await response.json();
-            window.location.href = url; // Redirect user
-        }
-    </script>   
-    
     <footer>
             <p>&copy; 2025 OptiGo Publishing. All rights reserved.</p>
             <p>Contact: optigo.publishing@optigo.com</p>
