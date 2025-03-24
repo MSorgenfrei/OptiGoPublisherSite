@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const firebaseUid = result.user.uid;
 
                 // Send the UID and other user data to your backend
-                fetch('https://optigo-paywall-backend.onrender.com', { 
+                fetch('https://optigo-paywall-backend.onrender.com/add-user', { 
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

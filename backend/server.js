@@ -77,24 +77,24 @@ client
 // Route to add a new user to the database
 app.post('/add-user', async (req, res) => {
     try {
-      const { firebase_uid, phone_number, name, email } = req.body;
-  
-      // Insert the user data into the database
-      const result = await client.query(
-        'INSERT INTO users (firebase_uid, phone_number, name, email) VALUES ($1, $2, $3, $4) RETURNING *',
-        [firebase_uid, phone_number, name, email]
-      );
-  
-      // Respond with the user data
-      res.json({
-        message: 'User added successfully!',
-        user: result.rows[0], // Returning the inserted user data
-      });
+        const { firebase_uid, phone_number, name = null, email = null } = req.body;
+
+        // Insert the user data into the database
+        const result = await client.query(
+            'INSERT INTO users (firebase_uid, phone_number, name, email) VALUES ($1, $2, $3, $4) RETURNING *',
+            [firebase_uid, phone_number, name, email]
+        );
+
+        // Respond with the user data
+        res.json({
+            message: 'User added successfully!',
+            user: result.rows[0], // Returning the inserted user data
+        });
     } catch (err) {
-      console.error('Error adding user:', err.stack);
-      res.status(500).json({ error: 'Error adding user', details: err });
+        console.error('Error adding user:', err.stack);
+        res.status(500).json({ error: 'Error adding user', details: err });
     }
-  });
+});
 
   // Route to get all users
 app.get('/users', async (req, res) => {
