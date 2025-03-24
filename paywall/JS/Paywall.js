@@ -127,39 +127,37 @@ document.addEventListener("DOMContentLoaded", () => {
     // Phone Auth: Verify OTP
     verifyBtn.addEventListener("click", () => {
         const otp = document.getElementById("paywall-otp").value;
+        console.log("Attempting to confirm OTP:", otp);
+    
         window.confirmationResult.confirm(otp)
             .then((result) => {
-                statusText.innerText = "Phone number verified!";
-                console.log("User:", result.user);
-
-                // Extract the Firebase UID
+                console.log("OTP confirmed. User:", result.user);
+    
                 const firebaseUid = result.user.uid;
-
-                // Send the UID and other user data to your backend
+                console.log("Firebase UID:", firebaseUid);
+    
+                // Send only the UID to your backend
                 fetch('https://optigo-paywall-backend.onrender.com/add-user', { 
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        firebase_uid: firebaseUid,
-                        phone_number: phoneNumber, // Send the phone number too
+                        firebase_uid: firebaseUid, // Send only the UID
                     }),
                 })
                 .then(response => response.json())
                 .then(data => {
                     console.log("User added:", data);
-                    // Move from Step 2 to Step 3
                     step2.classList.add("hidden");
                     step3.classList.remove("hidden");
                 })
                 .catch(error => {
-                    console.error("Error sending user data to backend:", error);
+                    console.error("Error sending UID to backend:", error);
                 });
-
             })
             .catch((error) => {
-                console.error(error);
+                console.error("Error confirming OTP:", error);
                 statusText.innerText = "Invalid Code. Try again!";
             });
     });

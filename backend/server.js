@@ -77,7 +77,7 @@ client
 // Route to add a new user to the database
 app.post('/add-user', async (req, res) => {
     try {
-        const { firebase_uid, phone_number, name = null, email = null } = req.body;
+        const { firebase_uid, phone_number = null, name = null, email = null } = req.body;
 
         // Insert the user data into the database
         const result = await client.query(
