@@ -1,4 +1,4 @@
-//Everything working but no phone number is being passed ot DB - only Firebase UID
+//everything working and both UID and phone number from FB is being added and/or updated to db
 
 document.addEventListener("DOMContentLoaded", () => {
     const pageKey = `paywallPassed_${window.location.pathname}`;
@@ -150,15 +150,19 @@ document.addEventListener("DOMContentLoaded", () => {
     
                 const firebaseUid = result.user.uid;
                 console.log("Firebase UID:", firebaseUid);
+
+                const phone_number = result.user.phoneNumber; // caputre phone number
+                console.log("Phone Number:", phone_number); // store in console log
     
-                // Send only the UID to your backend
+                // Send data to backend
                 fetch('https://optigo-paywall-backend.onrender.com/add-user', { 
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        firebase_uid: firebaseUid, // Send only the UID
+                        firebase_uid: firebaseUid, // Send  the UID
+                        phone_number: phone_number, // Send the phone number
                     }),
                 })
                 .then(response => response.json())
