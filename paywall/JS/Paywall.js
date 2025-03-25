@@ -98,10 +98,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Setup Invisible reCAPTCHA
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-        'size': 'invisible',
+        'size': 'invisible', // Invisible reCAPTCHA
         'callback': (response) => {
             console.log('reCAPTCHA resolved');
         }
+    });
+
+    // Ensure the reCAPTCHA widget is rendered before proceeding
+    window.recaptchaVerifier.render().then(function(widgetId) {
+        window.recaptchaWidgetId = widgetId; // Store the widget ID if needed
+        console.log('reCAPTCHA widget rendered');
     });
 
     // Phone Auth: Send Code
@@ -109,11 +115,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const phoneNumber = document.getElementById("paywall-phone").value;
         const appVerifier = window.recaptchaVerifier;
 
+        // Ensure that the reCAPTCHA widget is rendered before sending the verification code
+        if (!window.recaptchaVerifier) {
+            console.error("reCAPTCHA not initialized correctly.");
+            statusText.innerText = "reCAPTCHA not ready. Please try again.";
+            return;
+        }
+
         firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
             .then((confirmationResult) => {
                 window.confirmationResult = confirmationResult;
                 statusText.innerText = "Code sent!"; // Message that shows up
-                statusText.className = "text text-body"; // How to update style
+                statusText.className = "text text-body"; // Update style
                 document.getElementById("paywall-otp").classList.remove("hidden");
                 verifyBtn.classList.remove("hidden");
                 phoneBtn.classList.add("hidden"); // Hide send OTP button
