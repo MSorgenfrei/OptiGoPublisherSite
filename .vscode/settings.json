@@ -1,0 +1,19 @@
+{
+    "sqltools.connections": [
+        {
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": true
+                }
+            },
+            "previewLimit": 50,
+            "server": "dpg-cvgrsqdds78s73dv74ig-a.oregon-postgres.render.com",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "OptiGo Production",
+            "database": "optigo_paywall_database",
+            "username": "optigo_paywall_database_user",
+            "password": "eooBkPX3uYdFnQXGkp8pGlTt2H29FgxR"
+        }
+    ]
+}
