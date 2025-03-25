@@ -49,13 +49,12 @@ const client = new Client({
 });
 
 // Connect to the database
-client.connect()
-  .then(() => {
-    console.log('Connected to the database!');
-  })
-  .catch(err => {
-    console.error('Error connecting to the database:', err.stack);
-  });
+try {
+  await client.connect();
+  console.log('Connected to the database!');
+} catch (err) {
+  console.error('Error connecting to the database:', err.stack);
+}
 
 // SQL to create a new users table
 const createTableQuery = `
@@ -76,29 +75,60 @@ client
 
 // Route to add a new user to the database
 app.post('/add-user', async (req, res) => {
-    try {
-        const { firebase_uid, phone_number = null, name = null, email = null } = req.body;
+  try {
+      const { firebase_uid, phone_number = null, name = null, email = null } = req.body;
 
-        // Upsert user (insert if new, ignore if exists)
-        const result = await client.query(
-            `INSERT INTO users (firebase_uid, phone_number, name, email)
-             VALUES ($1, $2, $3, $4)
-             ON CONFLICT (firebase_uid) DO UPDATE 
-             SET phone_number = EXCLUDED.phone_number
-             RETURNING *`,
-            [firebase_uid, phone_number, name, email]
-        );
+      // Check if the user already exists by firebase_uid
+      const result = await client.query(
+          `SELECT * FROM users WHERE firebase_uid = $1`,
+          [firebase_uid]
+      );
 
-        res.json({
-            message: 'User added or updated successfully!',
-            user: result.rows[0], 
-        });
-    } catch (err) {
-        console.error('Error adding user:', err.stack);
-        res.status(500).json({ error: 'Error adding user', details: err });
-    }
+      if (result.rows.length > 0) {
+          // If user exists, check if any new information has been provided
+          const existingUser = result.rows[0];
+          
+          // If the existing user data is the same, do nothing
+          if (
+              existingUser.phone_number === phone_number &&
+              existingUser.name === name &&
+              existingUser.email === email
+          ) {
+              return res.json({ message: 'No updates, user data is unchanged.' });
+          }
+
+          // Otherwise, update the user with new info
+          await client.query(
+              `UPDATE users 
+              SET phone_number = COALESCE($2, phone_number), 
+                  name = COALESCE($3, name), 
+                  email = COALESCE($4, email)
+              WHERE firebase_uid = $1`,
+              [firebase_uid, phone_number, name, email]
+          );
+
+          return res.json({
+              message: 'User updated successfully!',
+              user: { firebase_uid, phone_number, name, email }
+          });
+      } else {
+          // If the user does not exist, insert the new user
+          await client.query(
+              `INSERT INTO users (firebase_uid, phone_number, name, email) 
+               VALUES ($1, $2, $3, $4)`,
+              [firebase_uid, phone_number, name, email]
+          );
+
+          return res.json({
+              message: 'User added successfully!',
+              user: { firebase_uid, phone_number, name, email }
+          });
+      }
+  } catch (err) {
+      console.error('Error adding/updating user:', err.stack);
+      res.status(500).json({ error: 'Error adding/updating user', details: err });
+  }
 });
-
 
   // Route to get all users
 app.get('/users', async (req, res) => {
