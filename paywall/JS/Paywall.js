@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const firebaseUid = result.user.uid;
                 console.log("Firebase UID:", firebaseUid);
 
-                const phone_number = result.user.phone_number; // caputre phone number
+                const phone_number = result.user.phoneNumber; // caputre phone number
                 console.log("Phone Number:", phone_number); // store in console log
     
                 // Send data to backend
