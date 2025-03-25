@@ -135,7 +135,7 @@ app.get('/users', async (req, res) => {
     try {
       // Query to select all users
       const result = await client.query('SELECT * FROM users');
-  
+
       // Respond with the users data
       res.json(result.rows);
     } catch (err) {
