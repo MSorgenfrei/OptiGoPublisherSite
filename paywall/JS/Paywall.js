@@ -1,3 +1,5 @@
+//this is a test to understand branches
+
 document.addEventListener("DOMContentLoaded", () => {
     const pageKey = `paywallPassed_${window.location.pathname}`;
     const paymentSuccess = localStorage.getItem("payment_success") === "true";
