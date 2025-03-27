@@ -38,16 +38,45 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
       return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  console.log('✅ Event received:', event.type);
+  console.log('✅ Webhook event received:', JSON.stringify(event, null, 2)); // 🔍 Full event logging
 
   if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
+      console.log("🔍 Extracted session details:", {
+          firebase_uid: session.client_reference_id,
+          amount: session.amount_total,
+          currency: session.currency
+      });
+
+      // 🚀 Fetch `price_id` from line items
+      let priceId = null;
+      try {
+          const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+          if (lineItems.data.length > 0) {
+              priceId = lineItems.data[0].price.id;
+          }
+          console.log("🔍 Extracted price_id:", priceId);
+      } catch (err) {
+          console.error("❌ Error fetching line items:", err);
+      }
+
+      // 🚀 Check database connection before inserting
+      try {
+          console.log("🔌 Checking database connection...");
+          const dbCheck = await client.query("SELECT NOW()");
+          console.log("✅ Database is connected:", dbCheck.rows);
+      } catch (err) {
+          console.error("❌ Database connection error:", err);
+          return res.status(500).json({ error: "Database connection error" });
+      }
+
+      // 🚀 Insert into database
       try {
           await client.query(
-            `INSERT INTO checkouts (firebase_uid, price_id, amount, created_at)
-            VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
-            [session.client_reference_id, session.price_id, session.amount_total]
-        );
+              `INSERT INTO checkouts (firebase_uid, price_id, amount, created_at)
+              VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
+              [session.client_reference_id, priceId, session.amount_total]
+          );
           console.log(`✅ Checkout recorded for Firebase UID: ${session.client_reference_id}`);
       } catch (error) {
           console.error('❌ Error recording checkout:', error);
