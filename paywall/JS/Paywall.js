@@ -2,6 +2,34 @@ document.addEventListener("DOMContentLoaded", () => {
     const pageKey = `paywallPassed_${window.location.pathname}`;
     const paymentSuccess = localStorage.getItem("payment_success") === "true";
 
+    // Initialize Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyAbn5wdVquG2or6jA7yBZgqy2lolbmoPLc",
+        authDomain: "optigo-publishing-demo.firebaseapp.com",
+        projectId: "optigo-publishing-demo",
+        storageBucket: "optigo-publishing-demo.appspot.com",
+        messagingSenderId: "330666647467",
+        appId: "1:330666647467:web:44e503b81534ffd87cbcee",
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // Setup reCAPTCHA (Only Once)
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        size: 'invisible',
+        callback: (response) => {
+            console.log('reCAPTCHA resolved');
+        }
+    });
+
+    // Check if user is authenticated before showing paywall
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            console.log("✅ User is logged in, skipping paywall.");
+            return;
+        }
+
+        console.log("🚧 User is not logged in, showing paywall.");
+
     // Create modal HTML
     const modalHTML = `
         <div id="paywall-overlay">
@@ -85,25 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
         step2.classList.remove("hidden");
     });
 
-    // Initialize Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyAbn5wdVquG2or6jA7yBZgqy2lolbmoPLc",
-        authDomain: "optigo-publishing-demo.firebaseapp.com",
-        projectId: "optigo-publishing-demo",
-        storageBucket: "optigo-publishing-demo.appspot.com",
-        messagingSenderId: "330666647467",
-        appId: "1:330666647467:web:44e503b81534ffd87cbcee",
-    };
-    firebase.initializeApp(firebaseConfig);
-
-    // Setup Invisible reCAPTCHA
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-        'size': 'invisible', // Invisible reCAPTCHA
-        'callback': (response) => {
-            console.log('reCAPTCHA resolved');
-        }
-    });
-
     // Ensure the reCAPTCHA widget is rendered before proceeding
     window.recaptchaVerifier.render().then(function(widgetId) {
         window.recaptchaWidgetId = widgetId; // Store the widget ID if needed
@@ -121,6 +130,11 @@ document.addEventListener("DOMContentLoaded", () => {
             statusText.innerText = "reCAPTCHA not ready. Please try again.";
             return;
         }
+
+        // Reset reCAPTCHA widget
+        window.recaptchaVerifier.render().then((widgetId) => {
+            grecaptcha.reset(widgetId);
+        });
 
         firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
             .then((confirmationResult) => {
@@ -232,11 +246,5 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("An error occurred. Please try again.");
         }
     });    
-    
-
-    // Show paywall
-    setTimeout(() => {
-        overlay.style.display = "flex";
-        overlay.style.backdropFilter = "blur(5px)";
-    }, 1500);
 });
+})
