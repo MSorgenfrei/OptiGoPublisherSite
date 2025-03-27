@@ -156,11 +156,13 @@ app.post('/add-user', async (req, res) => {
 
 // Route to create checkout session
 app.post("/create-checkout-session", async (req, res) => {
+  console.log("Received checkout request:", req.body); // 🔍 Debugging log
+
   try {
     const { priceId, successUrl, cancelUrl, userUID } = req.body;
 
     if (!priceId || !successUrl || !cancelUrl || !userUID) {
-      return res.status(400).json({ error: "Missing required fields" });
+      return res.status(400).json({ error: "Missing required fields", received: req.body });
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -174,6 +176,7 @@ app.post("/create-checkout-session", async (req, res) => {
 
     res.json({ url: session.url });
   } catch (error) {
+    console.error("❌ Error creating checkout session:", error);
     res.status(400).json({ error: error.message });
   }
 });
