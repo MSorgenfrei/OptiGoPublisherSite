@@ -17,8 +17,6 @@ app.use(cors({
     ]
 }));
 
-app.use(express.json());
-
 // SQL to create a new checkouts table
 const createCheckoutsTableQuery = `
   CREATE TABLE IF NOT EXISTS checkouts (
@@ -176,32 +174,32 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
-    console.error('⚠️  Webhook signature verification failed.', err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+      console.error('⚠️ Webhook signature verification failed:', err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
   console.log('✅ Event received:', event.type);
 
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
+      const session = event.data.object;
 
-    try {
-      await client.query(
-        `INSERT INTO checkouts (firebase_uid, price_id, amount, created_at)
-         VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
-        [session.client_reference_id, session.amount_total, session.currency]
-      );
-      console.log(`✅ Checkout recorded for Firebase UID: ${session.client_reference_id}`);
-    } catch (error) {
-      console.error('❌ Error recording checkout:', error);
-    }
+      try {
+          await client.query(
+              `INSERT INTO checkouts (firebase_uid, price_id, amount, created_at)
+               VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
+              [session.client_reference_id, session.amount_total, session.currency]
+          );
+          console.log(`✅ Checkout recorded for Firebase UID: ${session.client_reference_id}`);
+      } catch (error) {
+          console.error('❌ Error recording checkout:', error);
+      }
   }
 
   res.status(200).json({ received: true });
 });
 
-// AFTER webhook, apply JSON middleware
+// 🚀 Apply JSON middleware only AFTER the webhook route
 app.use(express.json());
 
