@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const successUrl = `${currentPage}?payment_success=true`; // Add query params for success
         const cancelUrl = `${currentPage}?payment_cancelled=true`; // Add query params for cancel
     
-        // Check if the user is logged in
+        // Ensure user is logged in
         const user = firebase.auth().currentUser;
         if (!user) {
             alert("You must verify your phone number first.");
@@ -202,12 +202,12 @@ document.addEventListener("DOMContentLoaded", () => {
         
         const userUID = user.uid; // Get Firebase UID
     
-        // ✅ Log request payload before sending
+        // Log the request payload
         const requestBody = {
             priceId,
             successUrl,
             cancelUrl,
-            userUID
+            userUID, // Add userUID to the payload
         };
         console.log("🛒 Sending checkout request:", requestBody);
     
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("❌ Network error:", error);
             alert("An error occurred. Please try again.");
         }
-    });
+    });    
     
 
     // Show paywall
