@@ -8,9 +8,6 @@ const { Client } = pkg;
 const app = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-// 🚀 Apply JSON middleware at the top for all non-webhook routes
-app.use(express.json());
-
 // CORS configuration
 app.use(cors({
     origin: [
@@ -27,6 +24,41 @@ const client = new Client({
     rejectUnauthorized: false,
   },
 });
+
+// 🚀 Webhook route first (before `express.json()`)
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  let event;
+  try {
+      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+      console.error('⚠️ Webhook signature verification failed:', err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  console.log('✅ Event received:', event.type);
+
+  if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      try {
+          await client.query(
+            `INSERT INTO checkouts (firebase_uid, price_id, amount, created_at)
+            VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
+            [session.client_reference_id, session.price_id, session.amount_total]
+        );
+          console.log(`✅ Checkout recorded for Firebase UID: ${session.client_reference_id}`);
+      } catch (error) {
+          console.error('❌ Error recording checkout:', error);
+      }
+  }
+
+  res.status(200).json({ received: true });
+});
+
+// 🚀 Now apply `express.json()` for all other routes
+app.use(express.json());
 
 // Start server after database connection
 const startServer = async () => {
@@ -69,40 +101,6 @@ const startServer = async () => {
 };
 
 startServer();
-
-// 🚀 Fix: Webhook route uses `express.raw()`
-app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-  } catch (err) {
-    console.error('⚠️ Webhook signature verification failed:', err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  console.log('✅ Event received:', event.type);
-
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-    try {
-      await client.query(
-        `INSERT INTO checkouts (firebase_uid, price_id, amount, created_at)
-         VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
-        [session.client_reference_id, session.amount_total, session.currency]
-      );
-      console.log(`✅ Checkout recorded for Firebase UID: ${session.client_reference_id}`);
-    } catch (error) {
-      console.error('❌ Error recording checkout:', error);
-    }
-  }
-
-  res.status(200).json({ received: true });
-});
-
-// 🚀 Fix: Ensure express.json() is applied for all other routes
 
 // Route to add user
 app.post('/add-user', async (req, res) => {
