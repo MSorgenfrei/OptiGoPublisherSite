@@ -177,34 +177,37 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
   } catch (err) {
-    console.log('Webhook signature verification failed:', err);
-    return res.status(400).send('Webhook Error: ' + err.message);
+      console.log('Webhook signature verification failed:', err);
+      return res.status(400).send('Webhook Error: ' + err.message);
   }
 
-  // Handle successful checkout session completion
+  // Log the event to see if it's received
+  console.log('Event received:', event);  // Log the event here
+
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
+      const session = event.data.object;
+      
+      // Extract needed information from the session
+      const priceId = session.display_items[0].custom.price.id;
+      const amount = session.amount_total;
+      const firebaseUid = session.client_reference_id;
 
-    // Get the information you need from the session
-    const priceId = session.line_items?.[0]?.price?.id || 'UNKNOWN'; // Extract the price ID
-    const amount = session.amount_total; // Extract the total amount
-
-    const firebaseUid = session.client_reference_id; // Assuming you're using the `client_reference_id` to store the Firebase UID
-
-    // Insert data into the database
-    try {
-      await client.query(
-        `INSERT INTO checkouts (firebase_uid, price_id, amount, created_at)
-         VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
-        [firebaseUid, priceId, amount]
-      );
-      console.log('Checkout recorded for Firebase UID:', firebaseUid);
-    } catch (error) {
-      console.error('Error recording checkout:', error);
-    }
+      // Insert data into the database
+      try {
+          await client.query(
+              `INSERT INTO checkouts (firebase_uid, price_id, amount, created_at)
+               VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
+              [firebaseUid, priceId, amount]
+          );
+          console.log('Checkout recorded for Firebase UID:', firebaseUid);
+      } catch (error) {
+          console.error('Error recording checkout:', error);
+      }
   }
 
+  // Respond with success
   res.status(200).send('Event received');
 });
+
