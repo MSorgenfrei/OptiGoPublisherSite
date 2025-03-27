@@ -1,0 +1,7 @@
+CREATE TABLE checkouts (
+    id SERIAL PRIMARY KEY,
+    firebase_uid VARCHAR(255) NOT NULL,
+    price_id VARCHAR(255) NOT NULL,
+    amount INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

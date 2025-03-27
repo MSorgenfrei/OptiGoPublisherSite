@@ -57,8 +57,10 @@ const startServer = async () => {
     console.log('Connected to the database!');
 
     // Create tables if they don't exist
-    await client.query(createCheckoutsTableQuery);
     await client.query(createUsersTableQuery);
+    console.log("Users table checked/created.");
+    await client.query(createCheckoutsTableQuery);
+    console.log("Checkouts table checked/created.");
 
     // Start the server only after the database is ready
     const PORT = process.env.PORT || 3000;
@@ -186,7 +188,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
     const session = event.data.object;
 
     // Get the information you need from the session
-    const priceId = session.display_items[0].custom.price.id; // Extract the price ID
+    const priceId = session.line_items?.[0]?.price?.id || 'UNKNOWN'; // Extract the price ID
     const amount = session.amount_total; // Extract the total amount
 
     const firebaseUid = session.client_reference_id; // Assuming you're using the `client_reference_id` to store the Firebase UID
