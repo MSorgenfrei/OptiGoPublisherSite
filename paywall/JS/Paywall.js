@@ -1,5 +1,3 @@
-//this is a test to understand branches
-
 document.addEventListener("DOMContentLoaded", () => {
     const pageKey = `paywallPassed_${window.location.pathname}`;
     const paymentSuccess = localStorage.getItem("payment_success") === "true";
@@ -194,6 +192,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const successUrl = `${currentPage}?payment_success=true`; // Add query params for success
     const cancelUrl = `${currentPage}?payment_cancelled=true`; // Add query params for cancel
 
+    // Get the Firebase UID of the current user
+    const userUID = firebase.auth().currentUser ? firebase.auth().currentUser.uid : null;
+
     try {
         const response = await fetch("https://optigo-paywall-backend.onrender.com/create-checkout-session", {
             method: "POST",
@@ -201,7 +202,8 @@ document.addEventListener("DOMContentLoaded", () => {
             body: JSON.stringify({
                 priceId,
                 successUrl, // Send dynamic success URL
-                cancelUrl   // Send dynamic cancel URL
+                cancelUrl,   // Send dynamic cancel URL
+                userUID,  // Pass Firebase UID if available
             })
         });
 
