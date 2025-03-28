@@ -204,6 +204,7 @@ const startServer = async () => {
         console.log('Connected to the database!');
 
         // Create tables if they don't exist
+        // Users table
         await pool.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -215,6 +216,7 @@ const startServer = async () => {
             );
         `);
 
+        // Checkouts table
         await pool.query(`
             CREATE TABLE IF NOT EXISTS checkouts (
                 id SERIAL PRIMARY KEY,
@@ -225,6 +227,7 @@ const startServer = async () => {
             );
         `);
 
+        // Done table
         await pool.query(`
             CREATE TABLE IF NOT EXISTS done (
                 id SERIAL PRIMARY KEY,
@@ -232,6 +235,16 @@ const startServer = async () => {
                 checkout_id VARCHAR(255) NOT NULL,
                 page_id VARCHAR(255) NOT NULL,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+
+        //Customers table
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS customers (
+                customer_id VARCHAR(255) PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                payg_price DECIMAL(10, 2) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
 
@@ -245,5 +258,46 @@ const startServer = async () => {
         process.exit(1);
     }
 };
+
+// Route to create a new customer
+app.post('/create-customer', async (req, res) => {
+    const { name, paygPrice } = req.body;
+
+    if (!name || !paygPrice) {
+        return res.status(400).json({ error: "Name and PAYG Price are required" });
+    }
+
+    try {
+        // Generate a random customer ID (short string)
+        const customerId = Math.random().toString(36).substring(2, 10);
+
+        // Insert customer into the database
+        await pool.query(
+            `INSERT INTO customers (customer_id, name, payg_price) 
+            VALUES ($1, $2, $3)`,
+            [customerId, name, paygPrice]
+        );
+
+        // Respond with the newly created customer
+        res.json({
+            success: true,
+            customer: { customer_id: customerId, name, payg_price: paygPrice, timestamp: new Date().toISOString() }
+        });
+    } catch (err) {
+        console.error('Error creating customer:', err.stack);
+        res.status(500).json({ error: 'Error creating customer', details: err });
+    }
+});
+
+// Route to get all customers
+app.get('/customers', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM customers');
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching customers:', err.stack);
+        res.status(500).json({ error: 'Error fetching customers', details: err });
+    }
+});
 
 startServer();

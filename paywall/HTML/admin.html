@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input, button {
+            margin: 5px;
+            padding: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Create New Customer</h1>
+
+    <div>
+        <input type="text" id="name" placeholder="Name" required>
+        <input type="number" id="payg_price" placeholder="PAYG Price" required>
+        <button onclick="createCustomer()">Create New Customer</button>
+    </div>
+
+    <h2>Customer Database</h2>
+    <table id="customersTable">
+        <thead>
+            <tr>
+                <th>Customer ID</th>
+                <th>Name</th>
+                <th>PAYG Price</th>
+                <th>Date & Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Customer records will be displayed here -->
+        </tbody>
+    </table>
+
+    <script>
+        function createCustomer() {
+            const name = document.getElementById("name").value;
+            const paygPrice = document.getElementById("payg_price").value;
+
+            if (name && paygPrice) {
+                // Simulating API call to backend (will be implemented next)
+                fetch('/create-customer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, paygPrice })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayCustomer(data.customer);
+                    } else {
+                        alert('Error creating customer');
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error);
+                });
+            } else {
+                alert('Please fill out all fields');
+            }
+        }
+
+        function displayCustomer(customer) {
+            const tableBody = document.getElementById("customersTable").getElementsByTagName("tbody")[0];
+            const newRow = tableBody.insertRow();
+            newRow.innerHTML = `
+                <td>${customer.customer_id}</td>
+                <td>${customer.name}</td>
+                <td>$${customer.payg_price}</td>
+                <td>${customer.timestamp}</td>
+            `;
+        }
+    </script>
+</body>
+</html>
