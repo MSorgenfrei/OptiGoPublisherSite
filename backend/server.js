@@ -268,8 +268,8 @@ app.post('/create-customer', async (req, res) => {
     }
 
     try {
-        // Convert the paygPrice to cents
-        const paygPriceInCents = Math.round(paygPrice * 100); // Convert dollars to cents
+        // Convert PAYG Price from dollars to cents (e.g., 1.50 => 150)
+        const paygPriceInCents = Math.round(paygPrice * 100);
 
         // Generate a random customer ID (short string)
         const customerId = Math.random().toString(36).substring(2, 10);
@@ -287,7 +287,7 @@ app.post('/create-customer', async (req, res) => {
             customer: {
                 customer_id: customerId,
                 name,
-                payg_price: paygPrice,  // Return the paygPrice in dollars
+                payg_price: paygPriceInCents / 100,  // Convert back to dollars for display
                 timestamp: new Date().toISOString()
             }
         });
@@ -296,7 +296,6 @@ app.post('/create-customer', async (req, res) => {
         res.status(500).json({ error: 'Error creating customer', details: err });
     }
 });
-
 
 // Route to get all customers
 app.get('/customers', async (req, res) => {
@@ -316,20 +315,20 @@ app.get('/customers', async (req, res) => {
     }
 });
 
-
 // Route to update a customer
 app.put('/update-customer/:customer_id', async (req, res) => {
     const { customer_id } = req.params;
     const { name, paygPrice } = req.body;
 
-    if (!name && !paygPrice) {
+    if (!name && paygPrice === undefined) {
         return res.status(400).json({ error: "At least one field (name or PAYG Price) is required to update" });
     }
 
     try {
         let paygPriceInCents = null;
         if (paygPrice !== undefined) {
-            paygPriceInCents = Math.round(paygPrice * 100);  // Convert dollars to cents
+            // Convert dollars to cents
+            paygPriceInCents = Math.round(paygPrice * 100);  
         }
 
         // Update customer data in the database
@@ -347,6 +346,7 @@ app.put('/update-customer/:customer_id', async (req, res) => {
         res.status(500).json({ error: 'Error updating customer', details: err });
     }
 });
+
 
 
 // Route to delete a customer
