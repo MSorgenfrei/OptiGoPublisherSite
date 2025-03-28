@@ -269,7 +269,7 @@ app.post('/create-customer', async (req, res) => {
 
     try {
         // Convert PAYG Price from dollars to cents (e.g., 1.50 => 150)
-        const paygPriceInCents = Math.round(paygPrice);
+        const paygPriceInCents = Math.round(paygPrice * 100);  // Ensure it's in cents
 
         // Generate a random customer ID (short string)
         const customerId = Math.random().toString(36).substring(2, 10);
@@ -287,7 +287,7 @@ app.post('/create-customer', async (req, res) => {
             customer: {
                 customer_id: customerId,
                 name,
-                payg_price: paygPriceInCents,  // Convert back to dollars for display
+                payg_price: paygPriceInCents,  // Send as cents
                 timestamp: new Date().toISOString()
             }
         });
@@ -305,7 +305,7 @@ app.get('/customers', async (req, res) => {
         // Convert cents to dollars for payg_price
         const customers = result.rows.map(customer => ({
             ...customer,
-            payg_price: customer.payg_price
+            payg_price: (customer.payg_price / 100).toFixed(2)  // Convert to dollars for display
         }));
 
         res.json(customers);
@@ -328,7 +328,7 @@ app.put('/update-customer/:customer_id', async (req, res) => {
         let paygPriceInCents = null;
         if (paygPrice !== undefined) {
             // Convert dollars to cents
-            paygPriceInCents = Math.round(paygPrice);  
+            paygPriceInCents = Math.round(paygPrice * 100);  
         }
 
         // Update customer data in the database
@@ -346,8 +346,6 @@ app.put('/update-customer/:customer_id', async (req, res) => {
         res.status(500).json({ error: 'Error updating customer', details: err });
     }
 });
-
-
 
 // Route to delete a customer
 app.delete('/delete-customer/:customer_id', async (req, res) => {

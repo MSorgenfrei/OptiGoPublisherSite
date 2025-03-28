@@ -75,9 +75,14 @@
                 
                 data.forEach(customer => {
                     const row = document.createElement('tr');
+                    
+                    // Convert cents to dollars for display (no conversion needed for storage)
+                    const paygPrice = parseInt(customer.payg_price, 10) / 100;  // Convert cents to dollars
+                    const formattedPrice = isNaN(paygPrice) ? 'N/A' : paygPrice.toFixed(2);  // Format to two decimal places
+                    
                     row.innerHTML = `
                         <td>${customer.name}</td>
-                        <td>$${(customer.payg_price).toFixed(2)}</td>
+                        <td>$${formattedPrice}</td> <!-- Display price in dollars -->
                         <td>${customer.customer_id}</td>
                         <td>
                             <button onclick="deleteCustomer('${customer.customer_id}')">Delete</button>
@@ -123,8 +128,8 @@
                 return;
             }
 
-            // Convert price to cents
-            paygPrice = Math.round(paygPrice);
+            // Keep price as it is (no need to multiply by 100)
+            paygPrice = Math.round(paygPrice * 100);  // Convert to cents for storage
 
             try {
                 const response = await fetch('https://optigo-paywall-backend.onrender.com/create-customer', {
