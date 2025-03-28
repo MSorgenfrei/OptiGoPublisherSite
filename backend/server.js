@@ -269,7 +269,7 @@ app.post('/create-customer', async (req, res) => {
 
     try {
         // Store paygPrice directly as 50 for 0.50, 150 for 1.50
-        const paygPriceInUnits = Math.round(paygPrice);
+        const paygPriceInUnits = Math.round(paygPrice * 100); // Convert to integer units (e.g., 0.50 -> 50, 1.50 -> 150)
 
         // Generate a random customer ID (short string)
         const customerId = Math.random().toString(36).substring(2, 10);
@@ -303,10 +303,20 @@ app.get('/customers', async (req, res) => {
         const result = await pool.query('SELECT * FROM customers');
         
         // Convert stored payg_price (in units) to dollars for display
-        const customers = result.rows.map(customer => ({
-            ...customer,
-            payg_price: (customer.payg_price).toFixed(2)  // Display as dollar amount, e.g., 50 becomes 0.50
-        }));
+        const customers = result.rows.map(customer => {
+            let paygPrice = customer.payg_price;
+
+            // Ensure paygPrice is a number before using .toFixed()
+            if (isNaN(paygPrice)) {
+                console.error(`Invalid payg_price for customer ${customer.customer_id}: ${paygPrice}`);
+                paygPrice = 0; // Default to 0 if the value is invalid
+            }
+
+            return {
+                ...customer,
+                payg_price: (paygPrice / 100).toFixed(2)  // Convert to dollars and display with 2 decimal places
+            };
+        });
 
         res.json(customers);
     } catch (err) {
@@ -327,8 +337,8 @@ app.put('/update-customer/:customer_id', async (req, res) => {
     try {
         let paygPriceInUnits = null;
         if (paygPrice !== undefined) {
-            // Directly use the price as entered (e.g., 0.50 => 50, 1.50 => 150)
-            paygPriceInUnits = Math.round(paygPrice);
+            // Convert paygPrice directly to units (e.g., 0.50 => 50, 1.50 => 150)
+            paygPriceInUnits = Math.round(paygPrice * 100); // Ensure conversion to units (e.g., 0.50 -> 50)
         }
 
         // Update customer data in the database
@@ -346,6 +356,7 @@ app.put('/update-customer/:customer_id', async (req, res) => {
         res.status(500).json({ error: 'Error updating customer', details: err });
     }
 });
+
 
 // Route to delete a customer
 app.delete('/delete-customer/:customer_id', async (req, res) => {
