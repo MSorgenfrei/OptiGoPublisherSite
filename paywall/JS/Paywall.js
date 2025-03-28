@@ -1,8 +1,25 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const pageKey = `paywallPassed_${window.location.pathname}`;
-    const paymentSuccess = localStorage.getItem("payment_success") === "true";
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentSuccess = urlParams.get("payment_success") === "true";
 
-    // Create modal HTML
+    const pageKey = `paywallPassed_${window.location.pathname}`;
+    const isPageUnlocked = localStorage.getItem(pageKey) === "done";
+
+    if (paymentSuccess) {
+        localStorage.setItem(pageKey, "done");
+        setTimeout(() => {
+            window.location.href = window.location.pathname; // Reload without query params
+        }, 500);
+    }
+
+    if (isPageUnlocked) {
+        console.log("✅ Page is unlocked. No paywall required.");
+        return; // Exit early if the page is already unlocked
+    }
+
+    console.log("🚧 Paywall required for this page.");
+
+    // Inject the paywall modal into the page
     const modalHTML = `
         <div id="paywall-overlay">
             <div id="paywall-modal">
@@ -69,6 +86,20 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+       // 🚀 Define showPaywall function BEFORE calling it
+       function showPaywall() {
+        const overlay = document.getElementById("paywall-overlay");
+        if (!overlay) return; // Prevent error if paywall is not injected
+    
+        setTimeout(() => {
+            overlay.style.display = "flex";
+            overlay.style.backdropFilter = "blur(5px)";
+        }, 1500);
+    }
+
+    // ✅ Now it's safe to call showPaywall()
+    showPaywall();
 
     // Select all payment buttons and enable single selection behavior
     const buttons = document.querySelectorAll('.btn-option');
@@ -253,8 +284,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Show paywall
-    setTimeout(() => {
-        overlay.style.display = "flex";
-        overlay.style.backdropFilter = "blur(5px)";
-    }, 1500);
-});
+    function showPaywall() {
+        const overlay = document.getElementById("paywall-overlay");
+        if (!overlay) return; // Prevent error if paywall is not injected
+    
+        setTimeout(() => {
+            overlay.style.display = "flex";
+            overlay.style.backdropFilter = "blur(5px)";
+        }, 1500);
+    }
+    }    
+);

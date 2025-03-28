@@ -1,4 +1,4 @@
-// everything working and updating tables correctly
+// everything working and updating tables correctly - including DONE
 
 document.addEventListener("DOMContentLoaded", () => {
     const pageKey = `paywallPassed_${window.location.pathname}`;
@@ -202,12 +202,12 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Please select an amount.");
             return;
         }
-    
+
         const priceId = selectedButton.getAttribute("data-price-id");
         const currentPage = window.location.href; // Get the current page URL dynamically
         const successUrl = `${currentPage}?payment_success=true`; // Add query params for success
         const cancelUrl = `${currentPage}?payment_cancelled=true`; // Add query params for cancel
-    
+
         // Ensure user is logged in
         const user = firebase.auth().currentUser;
         if (!user) {
@@ -215,28 +215,33 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Error: No authenticated user found.");
             return;
         }
-        
+
         const userUID = user.uid; // Get Firebase UID
-    
-        // Log the request payload
+
+        // Get the current page path as pageId
+        const pageId = window.location.pathname; // or any other identifier for the page
+
+        // Include pageId in the request
         const requestBody = {
             priceId,
             successUrl,
             cancelUrl,
             userUID, // Add userUID to the payload
+            pageId, // Add pageId here
         };
+
         console.log("🛒 Sending checkout request:", requestBody);
-    
+
         try {
             const response = await fetch("https://optigo-paywall-backend.onrender.com/create-checkout-session", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestBody),
             });
-    
+
             const data = await response.json();
             console.log("💳 Checkout response:", data);
-    
+
             if (response.ok && data.url) {
                 window.location.href = data.url; // Redirect to Stripe checkout
             } else {
@@ -247,8 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("❌ Network error:", error);
             alert("An error occurred. Please try again.");
         }
-    });    
-    
+    });
 
     // Show paywall
     setTimeout(() => {
