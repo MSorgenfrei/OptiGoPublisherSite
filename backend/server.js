@@ -269,7 +269,7 @@ app.post('/create-customer', async (req, res) => {
 
     try {
         // Convert PAYG Price from dollars to cents (e.g., 1.50 => 150)
-        const paygPriceInCents = Math.round(paygPrice * 100);
+        const paygPriceInCents = Math.round(paygPrice);
 
         // Generate a random customer ID (short string)
         const customerId = Math.random().toString(36).substring(2, 10);
@@ -287,7 +287,7 @@ app.post('/create-customer', async (req, res) => {
             customer: {
                 customer_id: customerId,
                 name,
-                payg_price: paygPriceInCents / 100,  // Convert back to dollars for display
+                payg_price: paygPriceInCents,  // Convert back to dollars for display
                 timestamp: new Date().toISOString()
             }
         });
@@ -305,7 +305,7 @@ app.get('/customers', async (req, res) => {
         // Convert cents to dollars for payg_price
         const customers = result.rows.map(customer => ({
             ...customer,
-            payg_price: customer.payg_price / 100  // Convert cents to dollars
+            payg_price: customer.payg_price
         }));
 
         res.json(customers);
@@ -328,7 +328,7 @@ app.put('/update-customer/:customer_id', async (req, res) => {
         let paygPriceInCents = null;
         if (paygPrice !== undefined) {
             // Convert dollars to cents
-            paygPriceInCents = Math.round(paygPrice * 100);  
+            paygPriceInCents = Math.round(paygPrice);  
         }
 
         // Update customer data in the database
