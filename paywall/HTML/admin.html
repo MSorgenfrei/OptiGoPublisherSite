@@ -128,8 +128,8 @@
                 return;
             }
 
-            // Keep price as it is (no need to multiply by 100)
-            paygPrice = Math.round(paygPrice);  // Convert to cents for storage
+            // Convert the price to cents (i.e., store 50 for $0.50)
+            const paygPriceInCents = Math.round(paygPrice * 100);
 
             try {
                 const response = await fetch('https://optigo-paywall-backend.onrender.com/create-customer', {
@@ -139,7 +139,7 @@
                     },
                     body: JSON.stringify({
                         name: name,
-                        paygPrice: paygPrice
+                        paygPrice: paygPriceInCents  // Send the price in cents
                     })
                 });
 

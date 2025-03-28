@@ -268,17 +268,17 @@ app.post('/create-customer', async (req, res) => {
     }
 
     try {
-        // Convert PAYG Price from dollars to cents (e.g., 1.50 => 150)
-        const paygPriceInCents = Math.round(paygPrice);
+        // Store paygPrice directly as 50 for 0.50, 150 for 1.50
+        const paygPriceInUnits = Math.round(paygPrice);
 
         // Generate a random customer ID (short string)
         const customerId = Math.random().toString(36).substring(2, 10);
 
-        // Insert customer into the database with paygPrice stored as cents
+        // Insert customer into the database with paygPrice stored directly
         await pool.query(
             `INSERT INTO customers (customer_id, name, payg_price) 
             VALUES ($1, $2, $3)`,
-            [customerId, name, paygPriceInCents]
+            [customerId, name, paygPriceInUnits]
         );
 
         // Respond with the newly created customer
@@ -287,7 +287,7 @@ app.post('/create-customer', async (req, res) => {
             customer: {
                 customer_id: customerId,
                 name,
-                payg_price: paygPriceInCents,  // Send as cents
+                payg_price: paygPriceInUnits,  // Store the price as units (e.g., 50, 150)
                 timestamp: new Date().toISOString()
             }
         });
@@ -302,10 +302,10 @@ app.get('/customers', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM customers');
         
-        // Convert cents to dollars for payg_price
+        // Convert stored payg_price (in units) to dollars for display
         const customers = result.rows.map(customer => ({
             ...customer,
-            payg_price: (customer.payg_price / 100).toFixed(2)  // Convert to dollars for display
+            payg_price: (customer.payg_price).toFixed(2)  // Display as dollar amount, e.g., 50 becomes 0.50
         }));
 
         res.json(customers);
@@ -325,10 +325,10 @@ app.put('/update-customer/:customer_id', async (req, res) => {
     }
 
     try {
-        let paygPriceInCents = null;
+        let paygPriceInUnits = null;
         if (paygPrice !== undefined) {
-            // Convert dollars to cents
-            paygPriceInCents = Math.round(paygPrice);  
+            // Directly use the price as entered (e.g., 0.50 => 50, 1.50 => 150)
+            paygPriceInUnits = Math.round(paygPrice);
         }
 
         // Update customer data in the database
@@ -337,7 +337,7 @@ app.put('/update-customer/:customer_id', async (req, res) => {
              SET name = COALESCE($1, name), 
                  payg_price = COALESCE($2, payg_price)
              WHERE customer_id = $3`,
-            [name, paygPriceInCents, customer_id]
+            [name, paygPriceInUnits, customer_id]
         );
 
         res.json({ success: true, message: 'Customer updated successfully!' });
