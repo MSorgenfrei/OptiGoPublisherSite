@@ -271,7 +271,7 @@ app.post('/create-customer', async (req, res) => {
         // Generate a random customer ID (short string)
         const customerId = Math.random().toString(36).substring(2, 10);
 
-        // Insert customer into the database
+        // Insert customer into the database with paygPrice stored as cents
         await pool.query(
             `INSERT INTO customers (customer_id, name, payg_price) 
             VALUES ($1, $2, $3)`,
@@ -281,7 +281,12 @@ app.post('/create-customer', async (req, res) => {
         // Respond with the newly created customer
         res.json({
             success: true,
-            customer: { customer_id: customerId, name, payg_price: paygPrice, timestamp: new Date().toISOString() }
+            customer: {
+                customer_id: customerId,
+                name,
+                payg_price: paygPrice,
+                timestamp: new Date().toISOString()
+            }
         });
     } catch (err) {
         console.error('Error creating customer:', err.stack);
@@ -293,7 +298,11 @@ app.post('/create-customer', async (req, res) => {
 app.get('/customers', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM customers');
-        res.json(result.rows);
+        const customers = result.rows.map(customer => ({
+            ...customer,
+            payg_price: customer.payg_price / 100  // Convert cents to dollars
+        }));
+        res.json(customers);
     } catch (err) {
         console.error('Error fetching customers:', err.stack);
         res.status(500).json({ error: 'Error fetching customers', details: err });

@@ -58,9 +58,16 @@
     <script>
         function createCustomer() {
             const name = document.getElementById("name").value;
-            const paygPrice = document.getElementById("payg_price").value;
+            let paygPrice = document.getElementById("payg_price").value;
 
             if (name && paygPrice) {
+                paygPrice = parseInt(paygPrice);  // Convert the price input to an integer (cents)
+
+                if (isNaN(paygPrice) || paygPrice < 0) {
+                    alert("Please enter a valid price in cents.");
+                    return;
+                }
+
                 // Simulating API call to backend
                 fetch('/create-customer', {
                     method: 'POST',
@@ -88,10 +95,12 @@
         function displayCustomer(customer) {
             const tableBody = document.getElementById("customersTable").getElementsByTagName("tbody")[0];
             const newRow = tableBody.insertRow();
+            const paygPriceFormatted = (customer.payg_price / 100).toFixed(2);  // Convert cents to dollars
+
             newRow.innerHTML = `
                 <td>${customer.customer_id}</td>
                 <td>${customer.name}</td>
-                <td>$${customer.payg_price}</td>
+                <td>$${paygPriceFormatted}</td>
                 <td>${customer.timestamp}</td>
                 <td>
                     <button onclick="editCustomer('${customer.customer_id}')">Edit</button>
