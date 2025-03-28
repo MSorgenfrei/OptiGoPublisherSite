@@ -45,6 +45,7 @@
                 <th>Name</th>
                 <th>PAYG Price</th>
                 <th>Date & Time</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -52,13 +53,15 @@
         </tbody>
     </table>
 
+    <button onclick="deleteAllCustomers()">Delete All Customers</button>
+
     <script>
         function createCustomer() {
             const name = document.getElementById("name").value;
             const paygPrice = document.getElementById("payg_price").value;
 
             if (name && paygPrice) {
-                // Simulating API call to backend (will be implemented next)
+                // Simulating API call to backend
                 fetch('/create-customer', {
                     method: 'POST',
                     headers: {
@@ -90,8 +93,72 @@
                 <td>${customer.name}</td>
                 <td>$${customer.payg_price}</td>
                 <td>${customer.timestamp}</td>
+                <td>
+                    <button onclick="editCustomer('${customer.customer_id}')">Edit</button>
+                    <button onclick="deleteCustomer('${customer.customer_id}')">Delete</button>
+                </td>
             `;
         }
+
+        function editCustomer(customerId) {
+            const newName = prompt("Enter new name:");
+            const newPaygPrice = prompt("Enter new PAYG Price:");
+
+            if (newName || newPaygPrice) {
+                fetch(`/update-customer/${customerId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: newName || undefined,
+                        paygPrice: newPaygPrice || undefined
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload(); // Refresh the table
+                    } else {
+                        alert('Error updating customer');
+                    }
+                });
+            }
+        }
+
+        function deleteCustomer(customerId) {
+            if (confirm("Are you sure you want to delete this customer?")) {
+                fetch(`/delete-customer/${customerId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload(); // Refresh the table
+                    } else {
+                        alert('Error deleting customer');
+                    }
+                });
+            }
+        }
+
+        function deleteAllCustomers() {
+            if (confirm("Are you sure you want to delete all customers?")) {
+                fetch('/delete-all-customers', {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload(); // Refresh the table
+                    } else {
+                        alert('Error deleting all customers');
+                    }
+                });
+            }
+        }
     </script>
+
 </body>
 </html>

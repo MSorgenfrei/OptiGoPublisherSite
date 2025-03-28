@@ -300,4 +300,66 @@ app.get('/customers', async (req, res) => {
     }
 });
 
+// Route to update a customer
+app.put('/update-customer/:customer_id', async (req, res) => {
+    const { customer_id } = req.params;
+    const { name, paygPrice } = req.body;
+
+    if (!name && !paygPrice) {
+        return res.status(400).json({ error: "At least one field (name or PAYG Price) is required to update" });
+    }
+
+    try {
+        // Update customer data in the database
+        await pool.query(
+            `UPDATE customers 
+             SET name = COALESCE($1, name), 
+                 payg_price = COALESCE($2, payg_price)
+             WHERE customer_id = $3`,
+            [name, paygPrice, customer_id]
+        );
+
+        res.json({ success: true, message: 'Customer updated successfully!' });
+    } catch (err) {
+        console.error('Error updating customer:', err.stack);
+        res.status(500).json({ error: 'Error updating customer', details: err });
+    }
+});
+
+// Route to delete a customer
+app.delete('/delete-customer/:customer_id', async (req, res) => {
+    const { customer_id } = req.params;
+
+    try {
+        // Delete customer from the database
+        const result = await pool.query(
+            `DELETE FROM customers WHERE customer_id = $1`,
+            [customer_id]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Customer not found' });
+        }
+
+        res.json({ success: true, message: 'Customer deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting customer:', err.stack);
+        res.status(500).json({ error: 'Error deleting customer', details: err });
+    }
+});
+
+// Route to delete all customers
+app.delete('/delete-all-customers', async (req, res) => {
+    try {
+        // Delete all customers
+        await pool.query('DELETE FROM customers');
+
+        res.json({ success: true, message: 'All customers deleted successfully' });
+    } catch (err) {
+        console.error('Error deleting all customers:', err.stack);
+        res.status(500).json({ error: 'Error deleting all customers', details: err });
+    }
+});
+
+
 startServer();
