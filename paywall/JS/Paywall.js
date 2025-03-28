@@ -203,6 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
         const priceId = selectedButton.getAttribute("data-price-id");
         const currentPage = window.location.href; // Get the current page URL dynamically
+        const pageId = window.location.pathname;  // or use a specific page ID
         const successUrl = `${currentPage}?payment_success=true`; // Add query params for success
         const cancelUrl = `${currentPage}?payment_cancelled=true`; // Add query params for cancel
     

@@ -1,4 +1,4 @@
-//everything working and both UID and phone number from FB is being added and/or updated to db
+// everything working and updating tables correctly
 
 document.addEventListener("DOMContentLoaded", () => {
     const pageKey = `paywallPassed_${window.location.pathname}`;
@@ -24,11 +24,22 @@ document.addEventListener("DOMContentLoaded", () => {
                     </h1>
                     <div style="text-align: center; margin: 30px 5px">
                         <h1 class="text text-body">Enter your phone number.</h1>
-                        <input type="text" class="input-field text text-body" id="paywall-phone" placeholder="+155501234" required/>
+                        <div style="display: flex; gap: 6px; justify-content: center;">
+                            <select id="paywall-country-code" class="input-field-small text text-body">
+                                <option value="+1" selected>+1</option>
+                                <option value="+44">+44</option>
+                                <option value="+91">+91</option>
+                                <option value="+61">+61</option>
+                                <option value="+49">+49</option>
+                                <!-- Add more country codes as needed -->
+                            </select>
+                            <input type="text" class="input-field-medium text text-body" id="paywall-phone" placeholder="55501234" required/>
+                        </div>
+
                         <div id="recaptcha-container"></div>
                         <button class="btn" id="paywall-phone-btn">Send Code</button> 
                    
-                        <input type="text" class="input-field text text-body hidden" id="paywall-otp" placeholder="Enter Code" />
+                        <input type="text" class="input-field text text-body hidden" style="width: 215px" id="paywall-otp" placeholder="Enter Code" />
                         <p id="paywall-status"></p>
                      </div>
                     <button class="btn hidden" id="paywall-verify-btn">Verify</button>
@@ -114,7 +125,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Phone Auth: Send Code
     phoneBtn.addEventListener("click", () => {
-        const phoneNumber = document.getElementById("paywall-phone").value;
+        const countryCode = document.getElementById("paywall-country-code").value;
+        const phoneNumber = document.getElementById("paywall-phone").value.trim();
+        const fullPhoneNumber = `${countryCode}${phoneNumber}`; // Concatenating country code with number
+
         const appVerifier = window.recaptchaVerifier;
 
         // Ensure that the reCAPTCHA widget is rendered before sending the verification code
@@ -124,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+        firebase.auth().signInWithPhoneNumber(fullPhoneNumber, appVerifier)
             .then((confirmationResult) => {
                 window.confirmationResult = confirmationResult;
                 statusText.innerText = "Code sent!"; // Message that shows up
@@ -183,42 +197,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Stripe Checkout
     document.getElementById("paywall-submit").addEventListener("click", async () => {
-    const selectedButton = document.querySelector(".btn-option.active");
-    if (!selectedButton) {
-        alert("Please select an amount.");
-        return;
-    }
-
-    const priceId = selectedButton.getAttribute("data-price-id");
-    const currentPage = window.location.href; // Get the current page URL dynamically
-    const successUrl = `${currentPage}?payment_success=true`; // Add query params for success
-    const cancelUrl = `${currentPage}?payment_cancelled=true`; // Add query params for cancel
-
-    try {
-        const response = await fetch("https://optigo-paywall-backend.onrender.com/create-checkout-session", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                priceId,
-                successUrl, // Send dynamic success URL
-                cancelUrl   // Send dynamic cancel URL
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.url) {
-            // Redirect to Stripe checkout
-            window.location.href = data.url;
-        } else {
-            console.error("Error:", data.error);
-            alert("Checkout failed.");
+        const selectedButton = document.querySelector(".btn-option.active");
+        if (!selectedButton) {
+            alert("Please select an amount.");
+            return;
         }
-    } catch (error) {
-        console.error("Error:", error);
-        alert("An error occurred. Please try again.");
-    }
-});
+    
+        const priceId = selectedButton.getAttribute("data-price-id");
+        const currentPage = window.location.href; // Get the current page URL dynamically
+        const successUrl = `${currentPage}?payment_success=true`; // Add query params for success
+        const cancelUrl = `${currentPage}?payment_cancelled=true`; // Add query params for cancel
+    
+        // Ensure user is logged in
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            alert("You must verify your phone number first.");
+            console.error("Error: No authenticated user found.");
+            return;
+        }
+        
+        const userUID = user.uid; // Get Firebase UID
+    
+        // Log the request payload
+        const requestBody = {
+            priceId,
+            successUrl,
+            cancelUrl,
+            userUID, // Add userUID to the payload
+        };
+        console.log("🛒 Sending checkout request:", requestBody);
+    
+        try {
+            const response = await fetch("https://optigo-paywall-backend.onrender.com/create-checkout-session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestBody),
+            });
+    
+            const data = await response.json();
+            console.log("💳 Checkout response:", data);
+    
+            if (response.ok && data.url) {
+                window.location.href = data.url; // Redirect to Stripe checkout
+            } else {
+                console.error("❌ Error:", data.error);
+                alert("Checkout failed. Please try again.");
+            }
+        } catch (error) {
+            console.error("❌ Network error:", error);
+            alert("An error occurred. Please try again.");
+        }
+    });    
+    
 
     // Show paywall
     setTimeout(() => {
