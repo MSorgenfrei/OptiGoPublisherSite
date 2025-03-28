@@ -268,6 +268,9 @@ app.post('/create-customer', async (req, res) => {
     }
 
     try {
+        // Convert the paygPrice to cents
+        const paygPriceInCents = Math.round(paygPrice * 100); // Convert dollars to cents
+
         // Generate a random customer ID (short string)
         const customerId = Math.random().toString(36).substring(2, 10);
 
@@ -275,7 +278,7 @@ app.post('/create-customer', async (req, res) => {
         await pool.query(
             `INSERT INTO customers (customer_id, name, payg_price) 
             VALUES ($1, $2, $3)`,
-            [customerId, name, paygPrice]
+            [customerId, name, paygPriceInCents]
         );
 
         // Respond with the newly created customer
@@ -284,7 +287,7 @@ app.post('/create-customer', async (req, res) => {
             customer: {
                 customer_id: customerId,
                 name,
-                payg_price: paygPrice,
+                payg_price: paygPrice,  // Return the paygPrice in dollars
                 timestamp: new Date().toISOString()
             }
         });
@@ -294,20 +297,25 @@ app.post('/create-customer', async (req, res) => {
     }
 });
 
+
 // Route to get all customers
 app.get('/customers', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM customers');
+        
+        // Convert cents to dollars for payg_price
         const customers = result.rows.map(customer => ({
             ...customer,
             payg_price: customer.payg_price / 100  // Convert cents to dollars
         }));
+
         res.json(customers);
     } catch (err) {
         console.error('Error fetching customers:', err.stack);
         res.status(500).json({ error: 'Error fetching customers', details: err });
     }
 });
+
 
 // Route to update a customer
 app.put('/update-customer/:customer_id', async (req, res) => {
@@ -319,13 +327,18 @@ app.put('/update-customer/:customer_id', async (req, res) => {
     }
 
     try {
+        let paygPriceInCents = null;
+        if (paygPrice !== undefined) {
+            paygPriceInCents = Math.round(paygPrice * 100);  // Convert dollars to cents
+        }
+
         // Update customer data in the database
         await pool.query(
             `UPDATE customers 
              SET name = COALESCE($1, name), 
                  payg_price = COALESCE($2, payg_price)
              WHERE customer_id = $3`,
-            [name, paygPrice, customer_id]
+            [name, paygPriceInCents, customer_id]
         );
 
         res.json({ success: true, message: 'Customer updated successfully!' });
@@ -334,6 +347,7 @@ app.put('/update-customer/:customer_id', async (req, res) => {
         res.status(500).json({ error: 'Error updating customer', details: err });
     }
 });
+
 
 // Route to delete a customer
 app.delete('/delete-customer/:customer_id', async (req, res) => {
