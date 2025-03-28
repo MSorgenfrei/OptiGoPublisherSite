@@ -22,11 +22,22 @@ document.addEventListener("DOMContentLoaded", () => {
                     </h1>
                     <div style="text-align: center; margin: 30px 5px">
                         <h1 class="text text-body">Enter your phone number.</h1>
-                        <input type="text" class="input-field text text-body" id="paywall-phone" placeholder="+155501234" required/>
+                        <div style="display: flex; gap: 6px; justify-content: center;">
+                            <select id="paywall-country-code" class="input-field-small text text-body">
+                                <option value="+1" selected>+1</option>
+                                <option value="+44">+44</option>
+                                <option value="+91">+91</option>
+                                <option value="+61">+61</option>
+                                <option value="+49">+49</option>
+                                <!-- Add more country codes as needed -->
+                            </select>
+                            <input type="text" class="input-field-medium text text-body" id="paywall-phone" placeholder="55501234" required/>
+                        </div>
+
                         <div id="recaptcha-container"></div>
                         <button class="btn" id="paywall-phone-btn">Send Code</button> 
                    
-                        <input type="text" class="input-field text text-body hidden" id="paywall-otp" placeholder="Enter Code" />
+                        <input type="text" class="input-field text text-body hidden" style="width: 215px" id="paywall-otp" placeholder="Enter Code" />
                         <p id="paywall-status"></p>
                      </div>
                     <button class="btn hidden" id="paywall-verify-btn">Verify</button>
@@ -112,7 +123,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Phone Auth: Send Code
     phoneBtn.addEventListener("click", () => {
-        const phoneNumber = document.getElementById("paywall-phone").value;
+        const countryCode = document.getElementById("paywall-country-code").value;
+        const phoneNumber = document.getElementById("paywall-phone").value.trim();
+        const fullPhoneNumber = `${countryCode}${phoneNumber}`; // Concatenating country code with number
+
         const appVerifier = window.recaptchaVerifier;
 
         // Ensure that the reCAPTCHA widget is rendered before sending the verification code
@@ -122,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+        firebase.auth().signInWithPhoneNumber(fullPhoneNumber, appVerifier)
             .then((confirmationResult) => {
                 window.confirmationResult = confirmationResult;
                 statusText.innerText = "Code sent!"; // Message that shows up

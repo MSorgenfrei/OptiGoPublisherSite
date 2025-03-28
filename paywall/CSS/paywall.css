@@ -76,8 +76,28 @@
 .input-field {
     margin: 10px 0;
     padding: 10px;
-    min-width: 80%;
+    min-width: 60%;
     max-width: 90%;
+    font-size: 1rem;
+    border: 1px solid #173E5A;
+    border-radius: 5px;
+    box-sizing: border-box;  /* Ensures padding doesn't affect the overall width */
+}
+
+.input-field-small {
+    margin: 10px 0 0 0;
+    width: 60px;
+    padding: 10px 5px;
+    font-size: 1rem;
+    border: 1px solid #173E5A;
+    border-radius: 5px;
+    box-sizing: border-box;  /* Ensures padding doesn't affect the overall width */
+}
+
+.input-field-medium {
+    margin: 10px 0 0 0;
+    width: 150px;
+    padding: 10px;
     font-size: 1rem;
     border: 1px solid #173E5A;
     border-radius: 5px;
@@ -90,7 +110,7 @@
     font-weight: 250;
     font-size: 1rem;
 }
-
+  
 /* Typography */
 .text{
     font-family: 'stevie sans', sans-serif;
