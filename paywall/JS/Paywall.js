@@ -62,9 +62,39 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }    
     
-    // Call the function after ensuring `customerId` exists
+    // Fetch name
+    let customerName = ""; // Default name
+    async function fetchName() {
+        try {
+            console.log("🔄 Fetching customer name for customer_id:", customerId);
+    
+            const response = await fetch(`https://optigo-paywall-backend.onrender.com/get-name?customer_id=${customerId}`);
+            const text = await response.text();  // Read raw text response
+    
+            console.log("📡 API Response Text:", text); // Log the response (even if it's not JSON)
+    
+            if (!response.ok) {
+                console.error(`⚠️ HTTP Error ${response.status}: ${response.statusText}`);
+                return;
+            }
+    
+            const data = JSON.parse(text); // Now attempt to parse it
+    
+            if (data.name) {
+                customerName = data.name;
+                console.log("👤 Customer Name:", customerName);
+            } else {
+                console.error("⚠️ No name found in response:", data);
+            }
+        } catch (error) {
+            console.error("❌ Error while fetching customer name:", error);
+        }
+    }
+    
+    // Call the functions after ensuring `customerId` exists
     if (customerId) {
         await fetchPrice(customerId);
+        await fetchName(customerId);
     }
 
     if (paymentSuccess) {
@@ -96,7 +126,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <!-- Step 2: Phone Authentication -->
                 <div id="paywall-step-2" class="hidden">
                     <h1 class="text text-header2">
-                        <span style="font-weight: 700;">The Marina Daily</span> uses 
+                        <span style="font-weight: 700;">${customerName}</span> uses 
                         <span style="font-weight: 700;">OptiGo</span> for pay as you go access.
                     </h1>
                     <div style="text-align: center; margin: 30px 5px">
