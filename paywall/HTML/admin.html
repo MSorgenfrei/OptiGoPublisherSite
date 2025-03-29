@@ -119,7 +119,7 @@
         // Event listener to create a new customer
         document.getElementById("createCustomerBtn").addEventListener("click", async () => {
             const name = document.getElementById("nameInput").value;
-            let paygPrice = parseFloat(document.getElementById("paygPriceInput").value);
+            const paygPrice = document.getElementById("paygPriceInput").value; // String value
 
             // Validate the price input to ensure it's a valid number
             if (!name || isNaN(paygPrice) || paygPrice < 0) {
@@ -128,7 +128,7 @@
             }
 
             // Convert the price to cents (i.e., store 50 for $0.50)
-            const paygPriceInCents = Math.round(paygPrice);
+            const paygPriceInCents = parseInt(paygPrice * 100);  // Multiply by 100 and convert to integer
 
             try {
                 const response = await fetch('https://optigo-paywall-backend.onrender.com/create-customer', {

@@ -268,13 +268,14 @@ app.post('/create-customer', async (req, res) => {
     }
 
     try {
-        // Store paygPrice directly as 50 for 0.50, 150 for 1.50
-        const paygPriceInUnits = Math.round(paygPrice); // Convert to integer units (e.g., 0.50 -> 50, 1.50 -> 150)
+        // Since the frontend sends paygPrice as an integer (e.g., 50 for $0.50, 150 for $1.50),
+        // no need for conversion, store it as is.
+        const paygPriceInUnits = paygPrice;  // Directly use the integer value received
 
         // Generate a random customer ID (short string)
         const customerId = Math.random().toString(36).substring(2, 10);
 
-        // Insert customer into the database with paygPrice stored directly
+        // Insert customer into the database with paygPrice stored directly as an integer
         await pool.query(
             `INSERT INTO customers (customer_id, name, payg_price) 
             VALUES ($1, $2, $3)`,
@@ -312,9 +313,12 @@ app.get('/customers', async (req, res) => {
                 paygPrice = 0; // Default to 0 if the value is invalid
             }
 
+            // Optionally, convert cents to dollars for display (e.g., 50 -> 0.50)
+            const paygPriceInDollars = (paygPrice / 100).toFixed(2); // Convert to dollars for display
+
             return {
                 ...customer,
-                payg_price: paygPrice  // Keep as integer (e.g., 50, 150)
+                payg_price: paygPriceInDollars  // Display as dollars (e.g., 0.50, 1.50)
             };
         });
 
