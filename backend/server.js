@@ -198,6 +198,31 @@ app.get('/done/:firebase_uid/:page_id', async (req, res) => {
     }
 });
 
+// Route to get payg_price for a customer
+app.get('/get-price', async (req, res) => {
+    const { customer_id } = req.query;
+
+    if (!customer_id) {
+        return res.status(400).json({ error: "customer_id is required" });
+    }
+
+    try {
+        const result = await pool.query(
+            `SELECT payg_price FROM customers WHERE customer_id = $1`,
+            [customer_id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Customer not found" });
+        }
+
+        res.json({ payg_price: result.rows[0].payg_price });
+    } catch (err) {
+        console.error('Error fetching price:', err.stack);
+        res.status(500).json({ error: 'Error fetching price', details: err });
+    }
+});
+
 // Start server after database setup
 const startServer = async () => {
     try {
