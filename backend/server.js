@@ -243,10 +243,10 @@ const startServer = async () => {
             CREATE TABLE IF NOT EXISTS customers (
                 customer_id VARCHAR(255) PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
-                payg_price DECIMAL(10, 2) NOT NULL,
+                payg_price INTEGER NOT NULL,  -- Changed to INTEGER
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
-        `);
+        `);        
 
         const PORT = process.env.PORT || 3000;
         app.listen(PORT, () => {
@@ -263,7 +263,7 @@ const startServer = async () => {
 app.post('/create-customer', async (req, res) => {
     const { name, paygPrice } = req.body;
 
-    if (!name || !paygPrice) {
+    if (!name || paygPrice === undefined) {
         return res.status(400).json({ error: "Name and PAYG Price are required" });
     }
 
@@ -302,11 +302,11 @@ app.get('/customers', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM customers');
         
-        // Convert stored payg_price (in units) to dollars for display
+        // Display payg_price as integer (no conversion to dollars)
         const customers = result.rows.map(customer => {
             let paygPrice = customer.payg_price;
 
-            // Ensure paygPrice is a number before using .toFixed()
+            // Ensure paygPrice is a valid number
             if (isNaN(paygPrice)) {
                 console.error(`Invalid payg_price for customer ${customer.customer_id}: ${paygPrice}`);
                 paygPrice = 0; // Default to 0 if the value is invalid
@@ -314,7 +314,7 @@ app.get('/customers', async (req, res) => {
 
             return {
                 ...customer,
-                payg_price: (paygPrice / 100).toFixed(2)  // Convert to dollars and display with 2 decimal places
+                payg_price: paygPrice  // Keep as integer (e.g., 50, 150)
             };
         });
 
@@ -324,39 +324,6 @@ app.get('/customers', async (req, res) => {
         res.status(500).json({ error: 'Error fetching customers', details: err });
     }
 });
-
-// Route to update a customer
-app.put('/update-customer/:customer_id', async (req, res) => {
-    const { customer_id } = req.params;
-    const { name, paygPrice } = req.body;
-
-    if (!name && paygPrice === undefined) {
-        return res.status(400).json({ error: "At least one field (name or PAYG Price) is required to update" });
-    }
-
-    try {
-        let paygPriceInUnits = null;
-        if (paygPrice !== undefined) {
-            // Convert paygPrice directly to units (e.g., 0.50 => 50, 1.50 => 150)
-            paygPriceInUnits = Math.round(paygPrice * 100); // Ensure conversion to units (e.g., 0.50 -> 50)
-        }
-
-        // Update customer data in the database
-        await pool.query(
-            `UPDATE customers 
-             SET name = COALESCE($1, name), 
-                 payg_price = COALESCE($2, payg_price)
-             WHERE customer_id = $3`,
-            [name, paygPriceInUnits, customer_id]
-        );
-
-        res.json({ success: true, message: 'Customer updated successfully!' });
-    } catch (err) {
-        console.error('Error updating customer:', err.stack);
-        res.status(500).json({ error: 'Error updating customer', details: err });
-    }
-});
-
 
 // Route to delete a customer
 app.delete('/delete-customer/:customer_id', async (req, res) => {

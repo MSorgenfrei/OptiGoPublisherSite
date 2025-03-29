@@ -76,13 +76,12 @@
                 data.forEach(customer => {
                     const row = document.createElement('tr');
                     
-                    // Convert cents to dollars for display (no conversion needed for storage)
-                    const paygPrice = parseInt(customer.payg_price, 10) / 100;  // Convert cents to dollars
-                    const formattedPrice = isNaN(paygPrice) ? 'N/A' : paygPrice.toFixed(2);  // Format to two decimal places
+                    // Display payg_price as an integer (in cents, no conversion)
+                    const paygPrice = customer.payg_price;  // Use the price directly as an integer
                     
                     row.innerHTML = `
                         <td>${customer.name}</td>
-                        <td>$${formattedPrice}</td> <!-- Display price in dollars -->
+                        <td>${paygPrice}</td> <!-- Display payg_price as an integer -->
                         <td>${customer.customer_id}</td>
                         <td>
                             <button onclick="deleteCustomer('${customer.customer_id}')">Delete</button>
