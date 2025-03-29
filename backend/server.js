@@ -269,7 +269,7 @@ app.post('/create-customer', async (req, res) => {
 
     try {
         // Store paygPrice directly as 50 for 0.50, 150 for 1.50
-        const paygPriceInUnits = Math.round(paygPrice * 100); // Convert to integer units (e.g., 0.50 -> 50, 1.50 -> 150)
+        const paygPriceInUnits = Math.round(paygPrice); // Convert to integer units (e.g., 0.50 -> 50, 1.50 -> 150)
 
         // Generate a random customer ID (short string)
         const customerId = Math.random().toString(36).substring(2, 10);

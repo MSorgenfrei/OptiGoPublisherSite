@@ -128,7 +128,7 @@
             }
 
             // Convert the price to cents (i.e., store 50 for $0.50)
-            const paygPriceInCents = Math.round(paygPrice * 100);
+            const paygPriceInCents = Math.round(paygPrice);
 
             try {
                 const response = await fetch('https://optigo-paywall-backend.onrender.com/create-customer', {
