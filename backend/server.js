@@ -223,6 +223,32 @@ app.get('/get-price', async (req, res) => {
     }
 });
 
+// Route to get customer name
+app.get('/get-name', async (req, res) => {
+    const { customer_id } = req.query;
+
+    if (!customer_id) {
+        return res.status(400).json({ error: "customer_id is required" });
+    }
+
+    try {
+        const result = await pool.query(
+            `SELECT name FROM customers WHERE customer_id = $1`,
+            [customer_id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Customer not found" });
+        }
+
+        res.json({ name: result.rows[0].name });
+    } catch (err) {
+        console.error('Error fetching name:', err.stack);
+        res.status(500).json({ error: 'Error fetching name', details: err });
+    }
+});
+
+
 // Start server after database setup
 const startServer = async () => {
     try {
