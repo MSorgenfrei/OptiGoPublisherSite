@@ -146,6 +146,11 @@
                 if (response.ok) {
                     alert("Customer created successfully!");
                     fetchCustomers(); // Refresh the customer list
+
+                    // Clear the input fields after successful customer creation
+                    document.getElementById("nameInput").value = '';
+                    document.getElementById("paygPriceInput").value = '';
+                    
                 } else {
                     alert("Error creating customer: " + data.error);
                 }
