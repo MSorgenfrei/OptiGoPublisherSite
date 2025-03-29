@@ -198,8 +198,8 @@ app.get('/done/:firebase_uid/:page_id', async (req, res) => {
     }
 });
 
-// Route to get payg_price for a customer
-app.get('/get-price', async (req, res) => {
+// Route to get payg_price and customer name for a customer
+app.get('/get-customer-details', async (req, res) => {
     const { customer_id } = req.query;
 
     if (!customer_id) {
@@ -208,7 +208,7 @@ app.get('/get-price', async (req, res) => {
 
     try {
         const result = await pool.query(
-            `SELECT payg_price FROM customers WHERE customer_id = $1`,
+            `SELECT payg_price, name FROM customers WHERE customer_id = $1`,
             [customer_id]
         );
 
@@ -216,10 +216,13 @@ app.get('/get-price', async (req, res) => {
             return res.status(404).json({ error: "Customer not found" });
         }
 
-        res.json({ payg_price: result.rows[0].payg_price });
+        res.json({
+            payg_price: result.rows[0].payg_price,
+            name: result.rows[0].name
+        });
     } catch (err) {
-        console.error('Error fetching price:', err.stack);
-        res.status(500).json({ error: 'Error fetching price', details: err });
+        console.error('Error fetching customer details:', err.stack);
+        res.status(500).json({ error: 'Error fetching customer details', details: err });
     }
 });
 
