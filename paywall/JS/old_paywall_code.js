@@ -1,22 +1,114 @@
-// working great and improved logic for when to show the paywall
+// everything working as desired
 
-document.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
+    const scriptTag = document.querySelector('script[src*="Paywall.js"]');
+if (scriptTag) {
+    console.log("📜 Found Paywall.js script tag:", scriptTag);
+    const customerId = scriptTag.getAttribute("data-customer-id");
+    console.log("📌 Extracted Customer ID:", customerId);
+
+    if (!customerId) {
+        console.error("❌ Customer ID is missing from script tag.");
+        return;
+    }
+} else {
+    console.error("❌ Paywall.js script tag not found.");
+}
+});
+
+document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const paymentSuccess = urlParams.get("payment_success") === "true";
 
     const pageKey = `paywallPassed_${window.location.pathname}`;
     const isPageUnlocked = localStorage.getItem(pageKey) === "done";
 
+    const scriptTag = document.querySelector('script[src*="Paywall.js"]'); // ✅ More reliable
+    const customerId = scriptTag?.getAttribute("data-customer-id");
+    
+    console.log("🔍 Script Tag Found:", scriptTag);
+
+    if (!customerId) {
+        console.error("❌ Customer ID is missing. Paywall cannot function correctly.");
+        return;
+    }
+
+    console.log("📌 Customer ID:", customerId);
+
+    // Fetch payg_price
+    let paygPrice = "0.66"; // Default price
+    async function fetchPrice() {
+        try {
+            console.log("🔄 Fetching payg_price for customer_id:", customerId);
+    
+            const response = await fetch(`https://optigo-paywall-backend.onrender.com/get-price?customer_id=${customerId}`);
+            const text = await response.text();  // Read raw text response
+    
+            console.log("📡 API Response Text:", text); // Log the response (even if it's not JSON)
+    
+            if (!response.ok) {
+                console.error(`⚠️ HTTP Error ${response.status}: ${response.statusText}`);
+                return;
+            }
+    
+            const data = JSON.parse(text); // Now attempt to parse it
+    
+            if (data.payg_price) {
+                paygPrice = (data.payg_price / 100).toFixed(2);
+                console.log("💰 Pay As You Go Price:", paygPrice);
+            } else {
+                console.error("⚠️ No payg_price found in response:", data);
+            }
+        } catch (error) {
+            console.error("❌ Error while fetching payg_price:", error);
+        }
+    }    
+    
+    // Fetch name
+    let customerName = ""; // Default name
+    async function fetchName() {
+        try {
+            console.log("🔄 Fetching customer name for customer_id:", customerId);
+    
+            const response = await fetch(`https://optigo-paywall-backend.onrender.com/get-name?customer_id=${customerId}`);
+            const text = await response.text();  // Read raw text response
+    
+            console.log("📡 API Response Text:", text); // Log the response (even if it's not JSON)
+    
+            if (!response.ok) {
+                console.error(`⚠️ HTTP Error ${response.status}: ${response.statusText}`);
+                return;
+            }
+    
+            const data = JSON.parse(text); // Now attempt to parse it
+    
+            if (data.name) {
+                customerName = data.name;
+                console.log("👤 Customer Name:", customerName);
+            } else {
+                console.error("⚠️ No name found in response:", data);
+            }
+        } catch (error) {
+            console.error("❌ Error while fetching customer name:", error);
+        }
+    }
+    
+    // Call the functions after ensuring `customerId` exists
+    if (customerId) {
+        await fetchPrice(customerId);
+        await fetchName(customerId);
+    }
+
     if (paymentSuccess) {
         localStorage.setItem(pageKey, "done");
         setTimeout(() => {
-            window.location.href = window.location.pathname; // Reload without query params
+            window.location.href = window.location.pathname;
         }, 500);
     }
 
     if (isPageUnlocked) {
         console.log("✅ Page is unlocked. No paywall required.");
-        return; // Exit early if the page is already unlocked
+        return;
     }
 
     console.log("🚧 Paywall required for this page.");
@@ -29,14 +121,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div id="paywall-step-1">
                     <h1 class="text text-header">Pay As You Go.</h1>
                     <h2 class="text text-subheader">No subscriptions. No surprises.</h2>
-                    <button class="btn" style="margin: 40px; border-radius: 5px; padding: 10px 20px" id="paywall-continue">Reveal Article $0.49</button>
+                    <button class="btn" style="margin: 40px; border-radius: 5px; padding: 10px 20px" id="paywall-continue">Reveal Article $${paygPrice}</button>
                     <p class="text text-small">Powered by <span style="font-weight: 700;">OptiGo.</span></p>
                 </div>
 
                 <!-- Step 2: Phone Authentication -->
                 <div id="paywall-step-2" class="hidden">
                     <h1 class="text text-header2">
-                        <span style="font-weight: 700;">The Marina Daily</span> uses 
+                        <span style="font-weight: 700;">${customerName}</span> uses 
                         <span style="font-weight: 700;">OptiGo</span> for pay as you go access.
                     </h1>
                     <div style="text-align: center; margin: 30px 5px">
@@ -89,6 +181,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 
+    document.getElementById("paywall-continue").innerText = `Reveal Article $${paygPrice}`;
+
        // 🚀 Define showPaywall function BEFORE calling it
        function showPaywall() {
         const overlay = document.getElementById("paywall-overlay");
@@ -138,7 +232,11 @@ document.addEventListener("DOMContentLoaded", () => {
         messagingSenderId: "330666647467",
         appId: "1:330666647467:web:44e503b81534ffd87cbcee",
     };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    } else {
+        firebase.app(); // ✅ Use the already initialized instance
+    }    
 
     // Setup Invisible reCAPTCHA
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
