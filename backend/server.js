@@ -31,7 +31,7 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// Webhook route (must be raw body)
+// Webhook route to get Stripe events
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -74,6 +74,18 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
         } catch (error) {
             console.error('❌ Error recording checkout:', error);
         }
+
+        // Update user balance
+        try {    
+            await pool.query(
+                    `UPDATE users SET balance = balance + $1 WHERE firebase_uid = $2`,
+                    [amount, firebase_uid]
+                );
+
+                console.log(`✅ Balance updated: +$${amount / 100} for UID ${firebase_uid}`);
+            } catch (error) {
+                console.error('❌ Error updating balance:', error);
+            }
 
         // Insert into `done` table
         try {
@@ -248,6 +260,65 @@ app.get('/get-name', async (req, res) => {
     }
 });
 
+// Route to update user blance
+app.post('/pay-for-content', async (req, res) => {
+    const { firebase_uid, customer_id, page_id } = req.body;
+
+    if (!firebase_uid || !customer_id || !page_id) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    try {
+        // Get user balance
+        const userResult = await pool.query(
+            `SELECT balance FROM users WHERE firebase_uid = $1`,
+            [firebase_uid]
+        );
+
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        let balance = userResult.rows[0].balance;
+
+        // Get the pay-per-article price
+        const priceResult = await pool.query(
+            `SELECT payg_price FROM customers WHERE customer_id = $1`,
+            [customer_id]
+        );
+
+        if (priceResult.rows.length === 0) {
+            return res.status(404).json({ error: "Customer not found" });
+        }
+
+        const payg_price = priceResult.rows[0].payg_price;
+
+        // Check if the user has enough balance
+        if (balance < payg_price) {
+            return res.status(402).json({ error: "Insufficient balance" });
+        }
+
+        // Deduct from balance
+        await pool.query(
+            `UPDATE users SET balance = balance - $1 WHERE firebase_uid = $2`,
+            [payg_price, firebase_uid]
+        );
+
+        // Mark the session as "done"
+        await pool.query(
+            `INSERT INTO done (firebase_uid, checkout_id, page_id) 
+             VALUES ($1, 'manual-payment', $2)`,
+            [firebase_uid, page_id]
+        );
+
+        return res.json({ success: true, message: `Content unlocked for $${payg_price / 100}` });
+    } catch (error) {
+        console.error('❌ Error processing payment:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 
 // Start server after database setup
 const startServer = async () => {
@@ -263,6 +334,7 @@ const startServer = async () => {
                 phone_number VARCHAR(15),
                 name VARCHAR(255),
                 email VARCHAR(255),
+                balance INTEGER DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
