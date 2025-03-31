@@ -75,17 +75,26 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
             console.error('❌ Error recording checkout:', error);
         }
 
-        // Update user balance
-        try {    
-            await pool.query(
+        // Update user balance after successful payment
+        try {
+            // Ensure user exists
+            const userExists = await pool.query(
+                `SELECT 1 FROM users WHERE firebase_uid = $1`, 
+                [firebase_uid]
+            );
+
+            if (userExists.rowCount === 0) {
+                console.error(`❌ User not found in the database: ${firebase_uid}`);
+            } else {
+                await pool.query(
                     `UPDATE users SET balance = balance + $1 WHERE firebase_uid = $2`,
                     [amount, firebase_uid]
                 );
-
                 console.log(`✅ Balance updated: +$${amount / 100} for UID ${firebase_uid}`);
-            } catch (error) {
-                console.error('❌ Error updating balance:', error);
             }
+        } catch (error) {
+            console.error('❌ Error updating balance:', error);
+        }
 
         // Insert into `done` table
         try {
