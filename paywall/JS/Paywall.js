@@ -90,58 +90,23 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.error("❌ Error while fetching customer name:", error);
         }
     }
-
-    //Fetch customer balance
-    let userBalance = 0.00; // Default balance
-    async function fetchBalance() {
-        try {
-            console.log("🔄 Fetching balance for customer_id:", customerId);
-            
-            const response = await fetch(`https://optigo-paywall-backend.onrender.com/get-balance?customer_id=${customerId}`);
-            const data = await response.json();
-
-            if (data.balance !== undefined) {
-                userBalance = (data.balance / 100).toFixed(2);
-                console.log("💰 User Balance:", userBalance);
-            } else {
-                console.error("⚠️ No balance found in response:", data);
-            }
-        } catch (error) {
-            console.error("❌ Error while fetching balance:", error);
-        }
-    }
     
     // Call the functions after ensuring `customerId` exists
     if (customerId) {
-        await fetchPrice();
-        await fetchName();
-        await fetchBalance();
+        await fetchPrice(customerId);
+        await fetchName(customerId);
     }
 
     if (paymentSuccess) {
         localStorage.setItem(pageKey, "done");
-    
-        // Deduct balance
-        fetch("https://optigo-paywall-backend.onrender.com/deduct-balance", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                customer_id: customerId,
-                amount: Math.round(paygPrice * 100), // Convert to cents
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("🔻 Balance Deducted:", data);
-            fetchBalance(); // Refresh balance display
-        })
-        .catch(error => {
-            console.error("❌ Error deducting balance:", error);
-        });
-    
         setTimeout(() => {
             window.location.href = window.location.pathname;
         }, 500);
+    }
+
+    if (isPageUnlocked) {
+        console.log("✅ Page is unlocked. No paywall required.");
+        return;
     }
 
     console.log("🚧 Paywall required for this page.");
@@ -413,10 +378,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         } catch (error) {
             console.error("❌ Network error:", error);
             alert("An error occurred. Please try again.");
-        }
-        
-        if (paymentSuccess) {
-            await fetchBalance(); // Refresh user balance
         }
     });
 
