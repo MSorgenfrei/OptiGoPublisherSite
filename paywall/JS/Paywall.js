@@ -355,6 +355,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             cancelUrl,
             userUID, // Add userUID to the payload
             pageId, // Add pageId here
+            customerId, // Add CustomerID to the payload
         };
 
         console.log("🛒 Sending checkout request:", requestBody);
