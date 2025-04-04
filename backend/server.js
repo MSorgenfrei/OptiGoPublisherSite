@@ -96,14 +96,43 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
             console.error('❌ Error updating balance:', error);
         }
 
-        // Insert into `done` table
+        const customerId = metadata?.customer_id || null;
+        let payg_price = null;
+        
+        // Lookup payg_price from customers table
+        if (customerId) {
+            try {
+                const result = await pool.query(
+                    `SELECT payg_price FROM customers WHERE customer_id = $1`,
+                    [customerId]
+                );
+                if (result.rows.length > 0) {
+                    payg_price = result.rows[0].payg_price;
+                }
+            } catch (err) {
+                console.error("❌ Error fetching payg_price:", err);
+            }
+        }
+
+        // Prevent duplicate processing (idempotency)
+        const alreadyProcessed = await pool.query(
+            `SELECT 1 FROM done WHERE checkout_id = $1`,
+            [session.id]
+        );
+
+        if (alreadyProcessed.rowCount > 0) {
+            console.warn(`⚠️ Duplicate webhook: session ${session.id} already processed.`);
+            return res.status(200).json({ received: true, duplicate: true });
+        }
+        
+        // Insert into `done` table with new fields
         try {
             await pool.query(
-                `INSERT INTO done (firebase_uid, checkout_id, page_id) 
-                VALUES ($1, $2, $3)`,
-                [firebase_uid, session.id, page_id]
+                `INSERT INTO done (firebase_uid, checkout_id, page_id, customer_id, payg_price)
+                 VALUES ($1, $2, $3, $4, $5)`,
+                [firebase_uid, session.id, page_id, customerId, payg_price]
             );
-            console.log(`✅ Done event recorded for Firebase UID: ${firebase_uid} on page ${page_id}`);
+            console.log(`✅ Done event recorded with customer_id ${customerId} and payg_price ${payg_price}`);
         } catch (error) {
             console.error('❌ Error recording done event:', error);
         }
@@ -170,9 +199,9 @@ app.post("/create-checkout-session", async (req, res) => {
     console.log("Received checkout request:", req.body);
 
     try {
-        const { priceId, successUrl, cancelUrl, userUID, pageId } = req.body;
+        const { priceId, successUrl, cancelUrl, userUID, pageId, customerId } = req.body;
 
-        if (!priceId || !successUrl || !cancelUrl || !userUID || !pageId) {
+        if (!priceId || !successUrl || !cancelUrl || !userUID || !pageId || !customerId) {
             return res.status(400).json({ error: "Missing required fields", received: req.body });
         }
 
@@ -183,7 +212,9 @@ app.post("/create-checkout-session", async (req, res) => {
             success_url: successUrl,
             cancel_url: cancelUrl,
             client_reference_id: userUID,
-            metadata: { page_id: pageId }
+            metadata: { 
+                page_id: pageId,
+                customer_id: customerId }
         });
 
         res.json({ url: session.url });
@@ -390,6 +421,8 @@ const startServer = async () => {
                 firebase_uid VARCHAR(255) NOT NULL,
                 checkout_id VARCHAR(255) NOT NULL,
                 page_id VARCHAR(255) NOT NULL,
+                customer_id VARCHAR(255),
+                payg_price INTEGER NOT NULL,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
